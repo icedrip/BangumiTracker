@@ -1,0 +1,32 @@
+included:
+  - BangumiTracker
+  - BangumiWidgets
+  - BangumiTrackerTests
+
+excluded:
+  - build
+  - .build
+  - DerivedData
+
+disabled_rules:
+  - trailing_whitespace
+  - vertical_whitespace
+  - line_length
+  - type_body_length
+  - file_length
+  - function_body_length
+  - cyclomatic_complexity
+  - nesting
+  - identifier_name
+
+opt_in_rules:
+  - empty_count
+  - closure_spacing
+  - contains_over_first_not_nil
+  - fallthrough
+  - first_where
+  - redundant_nil_coalescing
+  - sorted_first_last
+  - unneeded_parentheses_in_closure_argument
+
+reporter: "xcode"

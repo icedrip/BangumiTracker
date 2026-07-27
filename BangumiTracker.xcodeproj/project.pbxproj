@@ -19,6 +19,13 @@
 			remoteGlobalIDString = 5DEE00BF30B345F8B28BC666;
 			remoteInfo = BangumiWidgets;
 		};
+		1A00TEST0000000000000005 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1A34B0992FDD9FF600CE2C7A /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 1A34B0A02FDD9FF600CE2C7A;
+			remoteInfo = BangumiTracker;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -39,12 +46,18 @@
 		055AD005C0474A9FBDF0B053 /* BangumiWidgets.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = BangumiWidgets.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		1A34B0A12FDD9FF600CE2C7A /* BangumiTracker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BangumiTracker.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1A777D11300CE38700C482F7 /* BangumiWidgets.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = BangumiWidgets.entitlements; path = BangumiWidgets/BangumiWidgets.entitlements; sourceTree = "<group>"; };
+		1A00TEST0000000000000001 /* BangumiTrackerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BangumiTrackerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		1A34B0A32FDD9FF600CE2C7A /* BangumiTracker */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = BangumiTracker;
+			sourceTree = "<group>";
+		};
+		1A00TEST0000000000000002 /* BangumiTrackerTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = BangumiTrackerTests;
 			sourceTree = "<group>";
 		};
 		E825EFD0BD0F4E1FB73A4D95 /* BangumiWidgets */ = {
@@ -63,6 +76,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		1A00TEST0000000000000003 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		5E79B77AC73B4B259BC90776 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -78,6 +98,7 @@
 			children = (
 				1A777D11300CE38700C482F7 /* BangumiWidgets.entitlements */,
 				1A34B0A32FDD9FF600CE2C7A /* BangumiTracker */,
+				1A00TEST0000000000000002 /* BangumiTrackerTests */,
 				1A34B0A22FDD9FF600CE2C7A /* Products */,
 				1A777C5C300CE33400C482F7 /* Recovered References */,
 			);
@@ -88,6 +109,7 @@
 			children = (
 				1A34B0A12FDD9FF600CE2C7A /* BangumiTracker.app */,
 				055AD005C0474A9FBDF0B053 /* BangumiWidgets.appex */,
+				1A00TEST0000000000000001 /* BangumiTrackerTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -148,6 +170,27 @@
 			productReference = 055AD005C0474A9FBDF0B053 /* BangumiWidgets.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
+		1A00TEST0000000000000008 /* BangumiTrackerTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1A00TEST0000000000000009 /* Build configuration list for PBXNativeTarget "BangumiTrackerTests" */;
+			buildPhases = (
+				1A00TEST0000000000000006 /* Sources */,
+				1A00TEST0000000000000003 /* Frameworks */,
+				1A00TEST0000000000000004 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				1A00TEST0000000000000007 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				1A00TEST0000000000000002 /* BangumiTrackerTests */,
+			);
+			name = BangumiTrackerTests;
+			productName = BangumiTrackerTests;
+			productReference = 1A00TEST0000000000000001 /* BangumiTrackerTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -163,6 +206,10 @@
 					};
 					5DEE00BF30B345F8B28BC666 = {
 						CreatedOnToolsVersion = 26.5;
+					};
+					1A00TEST0000000000000008 = {
+						CreatedOnToolsVersion = 26.5;
+						TestTargetID = 1A34B0A02FDD9FF600CE2C7A;
 					};
 				};
 			};
@@ -185,12 +232,20 @@
 			targets = (
 				1A34B0A02FDD9FF600CE2C7A /* BangumiTracker */,
 				5DEE00BF30B345F8B28BC666 /* BangumiWidgets */,
+				1A00TEST0000000000000008 /* BangumiTrackerTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
 		1A34B09F2FDD9FF600CE2C7A /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		1A00TEST0000000000000004 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -214,6 +269,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		1A00TEST0000000000000006 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		8BA9DE27B3FC42669E6280FA /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -228,6 +290,11 @@
 			isa = PBXTargetDependency;
 			target = 5DEE00BF30B345F8B28BC666 /* BangumiWidgets */;
 			targetProxy = 1A777D10300CE33500C482F7 /* PBXContainerItemProxy */;
+		};
+		1A00TEST0000000000000007 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 1A34B0A02FDD9FF600CE2C7A /* BangumiTracker */;
+			targetProxy = 1A00TEST0000000000000005 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -408,6 +475,7 @@
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_STRICT_CONCURRENCY = complete;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = 1;
@@ -444,6 +512,7 @@
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_STRICT_CONCURRENCY = complete;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = 1;
@@ -475,6 +544,44 @@
 			};
 			name = Debug;
 		};
+		1A00TEST000000000000000A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = Z9PVKSMZVW;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = z.zy.BangumiTracker.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = 1;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/BangumiTracker.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/BangumiTracker";
+			};
+			name = Debug;
+		};
+		1A00TEST000000000000000B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = Z9PVKSMZVW;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = z.zy.BangumiTracker.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = 1;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/BangumiTracker.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/BangumiTracker";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -501,6 +608,15 @@
 			buildConfigurations = (
 				7E29952C7B5143D09DF8AA86 /* Debug */,
 				0191795AE29146769360C9EF /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		1A00TEST0000000000000009 /* Build configuration list for PBXNativeTarget "BangumiTrackerTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1A00TEST000000000000000A /* Debug */,
+				1A00TEST000000000000000B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
