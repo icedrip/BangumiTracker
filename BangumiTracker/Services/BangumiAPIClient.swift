@@ -339,7 +339,7 @@ actor BangumiAPIClient {
 
     // MARK: - User Collections
 
-    func fetchUserCollections(username: String = "-", type: Int? = nil) async throws -> [UserSubjectCollection] {
+    func fetchUserCollections(username: String = "-", type: Int? = nil, maxPages: Int = 50) async throws -> [UserSubjectCollection] {
         // `-` 404s on the list endpoint for some accounts (e.g. numeric usernames),
         // so resolve to the real username — same gotcha as the single-collection GET.
         let user = username == "-" ? try await resolveUsername() : username
@@ -347,6 +347,7 @@ actor BangumiAPIClient {
         // (e.g. 51 wishes) would otherwise lose the tail. Loop until exhausted.
         let pageSize = 50
         var offset = 0
+        var pages = 0
         var all: [UserSubjectCollection] = []
         while true {
             var query: [URLQueryItem] = [
@@ -357,7 +358,8 @@ actor BangumiAPIClient {
             let response: PagedUserCollection = try await request("/v0/users/\(user)/collections", query: query)
             all.append(contentsOf: response.data)
             offset += response.data.count
-            if response.data.count < pageSize || offset >= response.total { break }
+            pages += 1
+            if response.data.count < pageSize || offset >= response.total || pages >= maxPages { break }
         }
         return all
     }
@@ -396,12 +398,13 @@ actor BangumiAPIClient {
 
     // MARK: - Episode Collections
 
-    func fetchEpisodeCollection(subjectId: Int) async throws -> [UserEpisodeCollection] {
+    func fetchEpisodeCollection(subjectId: Int, maxPages: Int = 50) async throws -> [UserEpisodeCollection] {
         // Auto-paginate: long-running titles (One Piece 1100+, Conan 1100+)
         // exceed a single page, and a capped request would silently truncate
         // their per-episode progress. Loop until `total` is covered.
         let pageSize = 200
         var offset = 0
+        var pages = 0
         var all: [UserEpisodeCollection] = []
         while true {
             let query: [URLQueryItem] = [
@@ -411,7 +414,8 @@ actor BangumiAPIClient {
             let response: PagedUserEpisodeCollection = try await request("/v0/users/-/collections/\(subjectId)/episodes", query: query)
             all.append(contentsOf: response.data)
             offset += response.data.count
-            if response.data.count < pageSize || offset >= response.total { break }
+            pages += 1
+            if response.data.count < pageSize || offset >= response.total || pages >= maxPages { break }
         }
         return all
     }

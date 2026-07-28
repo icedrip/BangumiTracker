@@ -220,6 +220,61 @@ final class BangumiAPIClientTests: XCTestCase {
         XCTAssertEqual(countAfterSecond, 2, "Token change must invalidate cache to prevent cross-account data bleed")
     }
 
+    // MARK: - Pagination Safety
+
+    func testPaginationStopsAtMaxPages() async throws {
+        let requestCount = ActorCounter()
+        // Always return a full page (50 items) with a huge total to simulate infinite data
+        MockURLProtocol.requestHandler = { request in
+            await requestCount.increment()
+            let items = (0..<50).map { "{\"subject_id\":\($0),\"subject_type\":2,\"rate\":0,\"type\":3,\"tags\":[],\"ep_status\":0,\"vol_status\":0,\"private\":false}" }
+            let json = "{\"data\":[\(items.joined(separator: ","))],\"total\":99999}"
+            let response = HTTPURLResponse(
+                url: request.url!, statusCode: 200, httpVersion: nil, headerFields: nil
+            )!
+            return (response, json.data(using: .utf8)!)
+        }
+        let result = try await client.fetchUserCollections(username: "testuser", type: nil, maxPages: 3)
+        let count = await requestCount.value
+        XCTAssertEqual(count, 3, "Should stop after maxPages requests")
+        XCTAssertEqual(result.count, 150, "Should have 3 pages × 50 items")
+    }
+
+    func testPaginationDefaultMaxPagesIs50() async throws {
+        let requestCount = ActorCounter()
+        MockURLProtocol.requestHandler = { request in
+            await requestCount.increment()
+            let items = (0..<50).map { "{\"subject_id\":\($0),\"subject_type\":2,\"rate\":0,\"type\":3,\"tags\":[],\"ep_status\":0,\"vol_status\":0,\"private\":false}" }
+            let json = "{\"data\":[\(items.joined(separator: ","))],\"total\":99999}"
+            let response = HTTPURLResponse(
+                url: request.url!, statusCode: 200, httpVersion: nil, headerFields: nil
+            )!
+            return (response, json.data(using: .utf8)!)
+        }
+        let result = try await client.fetchUserCollections(username: "testuser")
+        let count = await requestCount.value
+        XCTAssertEqual(count, 50, "Default maxPages should be 50")
+        XCTAssertEqual(result.count, 2500, "Should have 50 pages × 50 items")
+    }
+
+    func testPaginationStopsEarlyWhenDataExhausted() async throws {
+        let requestCount = ActorCounter()
+        MockURLProtocol.requestHandler = { request in
+            await requestCount.increment()
+            // Return only 10 items (less than pageSize) to signal end of data
+            let items = (0..<10).map { "{\"subject_id\":\($0),\"subject_type\":2,\"rate\":0,\"type\":3,\"tags\":[],\"ep_status\":0,\"vol_status\":0,\"private\":false}" }
+            let json = "{\"data\":[\(items.joined(separator: ","))],\"total\":10}"
+            let response = HTTPURLResponse(
+                url: request.url!, statusCode: 200, httpVersion: nil, headerFields: nil
+            )!
+            return (response, json.data(using: .utf8)!)
+        }
+        let result = try await client.fetchUserCollections(username: "testuser", type: nil, maxPages: 50)
+        let count = await requestCount.value
+        XCTAssertEqual(count, 1, "Should stop after first page when data < pageSize")
+        XCTAssertEqual(result.count, 10)
+    }
+
     // MARK: - Error Properties
 
     func testRetryableErrors() {
