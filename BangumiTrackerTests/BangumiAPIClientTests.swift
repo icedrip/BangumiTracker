@@ -234,7 +234,7 @@ final class BangumiAPIClientTests: XCTestCase {
             )!
             return (response, json.data(using: .utf8)!)
         }
-        let result = try await client.fetchUserCollections(username: "testuser", type: nil, maxPages: 3)
+        let result = try await client.fetchUserCollections(username: "maxpages-user", type: nil, maxPages: 3)
         let count = await requestCount.value
         XCTAssertEqual(count, 3, "Should stop after maxPages requests")
         XCTAssertEqual(result.count, 150, "Should have 3 pages × 50 items")
@@ -251,7 +251,7 @@ final class BangumiAPIClientTests: XCTestCase {
             )!
             return (response, json.data(using: .utf8)!)
         }
-        let result = try await client.fetchUserCollections(username: "testuser")
+        let result = try await client.fetchUserCollections(username: "default-maxpages-user")
         let count = await requestCount.value
         XCTAssertEqual(count, 50, "Default maxPages should be 50")
         XCTAssertEqual(result.count, 2500, "Should have 50 pages × 50 items")
@@ -269,7 +269,7 @@ final class BangumiAPIClientTests: XCTestCase {
             )!
             return (response, json.data(using: .utf8)!)
         }
-        let result = try await client.fetchUserCollections(username: "testuser", type: nil, maxPages: 50)
+        let result = try await client.fetchUserCollections(username: "exhausted-user", type: nil, maxPages: 50)
         let count = await requestCount.value
         XCTAssertEqual(count, 1, "Should stop after first page when data < pageSize")
         XCTAssertEqual(result.count, 10)
