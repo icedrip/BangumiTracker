@@ -7,6 +7,7 @@ struct WatchingView: View {
     @AppStorage(PreferenceKey.defaultView) private var defaultView = DefaultListView.list.rawValue
 
     var body: some View {
+        @Bindable var vm = viewModel
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
                 LargeNavHeader(title: "在看")
@@ -57,6 +58,7 @@ struct WatchingView: View {
         .task(id: auth.isAuthenticated) {
             await viewModel.loadAll()
         }
+        .errorToast($vm.actionError)
     }
 
     @ViewBuilder

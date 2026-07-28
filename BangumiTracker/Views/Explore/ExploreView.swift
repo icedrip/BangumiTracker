@@ -4,6 +4,7 @@ struct ExploreView: View {
     @Environment(ExploreViewModel.self) private var viewModel
 
     var body: some View {
+        @Bindable var vm = viewModel
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
                 LargeNavHeader(title: "发现")
@@ -126,6 +127,7 @@ struct ExploreView: View {
         .task {
             await viewModel.loadAll()
         }
+        .errorToast($vm.actionError)
     }
 
     // MARK: - Helpers

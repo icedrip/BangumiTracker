@@ -9,6 +9,7 @@ final class WatchingViewModel {
     var episodeProgress: [Int: (watched: Int, total: Int)] = [:]
     var isLoading = false
     var errorMessage: String?
+    var actionError: String?
 
     private let api: BangumiAPIClient
     private let cache: LocalCacheService
@@ -130,7 +131,7 @@ final class WatchingViewModel {
             let watched = mainEps.filter { $0.type == .watched }.count + 1
             episodeProgress[subjectId] = (watched, mainEps.count)
         } catch {
-            errorMessage = error.localizedDescription
+            actionError = error.localizedDescription
         }
     }
 
@@ -150,7 +151,7 @@ final class WatchingViewModel {
             let mainCount = eps.filter { $0.episode.type == .main }.count
             episodeProgress[subjectId] = (mainCount, mainCount)
         } catch {
-            errorMessage = error.localizedDescription
+            actionError = error.localizedDescription
         }
     }
 
@@ -165,7 +166,6 @@ final class WatchingViewModel {
             var payload = UserSubjectCollectionModifyPayload()
             payload.type = type.rawValue
             try await api.updateCollection(subjectId: collection.subjectId, payload: payload)
-            errorMessage = nil
             await WidgetDataService.writeWatchingData(from: watchingList)
         } catch {
             // `watchingList` may have been replaced by a concurrent refresh
@@ -181,7 +181,7 @@ final class WatchingViewModel {
                 }
             }
             cache.updateCachedCollectionType(subjectId: collection.subjectId, type: .watching)
-            errorMessage = error.localizedDescription
+            actionError = error.localizedDescription
         }
     }
 
@@ -228,7 +228,7 @@ final class WatchingViewModel {
             payload.type = CollectionType.wish.rawValue
             try await api.updateCollection(subjectId: subject.id, payload: payload)
         } catch {
-            errorMessage = error.localizedDescription
+            actionError = error.localizedDescription
         }
     }
 

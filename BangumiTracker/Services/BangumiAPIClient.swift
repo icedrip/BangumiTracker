@@ -13,12 +13,37 @@ enum BangumiAPIError: Error, LocalizedError {
 
     var errorDescription: String? {
         switch self {
-        case .notImplemented: "API method not yet implemented"
-        case .unauthorized: "Not authenticated. Please log in to Bangumi."
-        case .networkError(let error): "Network error: \(error.localizedDescription)"
-        case .decodingError(let error): "Data parsing error: \(error.localizedDescription)"
-        case .httpError(let code): "Server error (HTTP \(code))"
-        case .invalidURL: "Invalid URL"
+        case .notImplemented:
+            return "功能暂未实现"
+        case .unauthorized:
+            return "登录已过期，请重新登录"
+        case .networkError(let error):
+            if let urlError = error as? URLError {
+                switch urlError.code {
+                case .timedOut:
+                    return "请求超时，请检查网络后重试"
+                case .notConnectedToInternet, .networkConnectionLost:
+                    return "网络连接不可用，请检查网络设置"
+                case .cannotFindHost, .cannotConnectToHost, .dnsLookupFailed:
+                    return "无法连接到服务器，请稍后重试"
+                default:
+                    return "网络请求失败，请稍后重试"
+                }
+            }
+            return "网络请求失败，请稍后重试"
+        case .decodingError:
+            return "数据解析异常，请稍后重试"
+        case .httpError(let code):
+            switch code {
+            case 429:
+                return "请求过于频繁，请稍后再试"
+            case 500...599:
+                return "服务器暂时不可用，请稍后重试"
+            default:
+                return "请求失败 (\(code))，请稍后重试"
+            }
+        case .invalidURL:
+            return "请求地址无效"
         }
     }
 }

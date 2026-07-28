@@ -108,16 +108,21 @@ enum WidgetDataService {
             return !FileManager.default.fileExists(atPath: fileURL.path)
         }
         guard !toDownload.isEmpty else { return }
-        await withTaskGroup(of: Void.self) { group in
-            for item in toDownload {
-                group.addTask {
-                    guard let urlString = item.imageURL, let url = URL(string: urlString) else { return }
-                    let fileURL = cacheDir.appendingPathComponent("\(item.id).jpg")
-                    do {
-                        let (data, _) = try await URLSession.shared.data(from: url)
-                        try data.write(to: fileURL)
-                    } catch {
-                        // 图片下载失败可忽略，widget 会显示占位
+        let batchSize = 4
+        for start in stride(from: 0, to: toDownload.count, by: batchSize) {
+            let end = min(start + batchSize, toDownload.count)
+            let chunk = toDownload[start..<end]
+            await withTaskGroup(of: Void.self) { group in
+                for item in chunk {
+                    group.addTask {
+                        guard let urlString = item.imageURL, let url = URL(string: urlString) else { return }
+                        let fileURL = cacheDir.appendingPathComponent("\(item.id).jpg")
+                        do {
+                            let (data, _) = try await URLSession.shared.data(from: url)
+                            try data.write(to: fileURL)
+                        } catch {
+                            // 图片下载失败可忽略，widget 会显示占位
+                        }
                     }
                 }
             }

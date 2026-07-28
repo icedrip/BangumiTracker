@@ -13,6 +13,7 @@ struct SearchView: View {
     @FocusState private var isSearchFocused: Bool
 
     var body: some View {
+        @Bindable var vm = viewModel
         VStack(spacing: 0) {
             searchBar
             searchTabs
@@ -42,6 +43,7 @@ struct SearchView: View {
             }
             Button("取消", role: .cancel) {}
         }
+        .errorToast($vm.actionError)
     }
 
     // MARK: - Search Bar

@@ -8,6 +8,7 @@ final class ExploreViewModel {
     var popularSubjects: [Subject] = []
     var isLoading = false
     var errorMessage: String?
+    var actionError: String?
     /// Subject ID → collection status, seeded from the SwiftData cache and kept
     /// in sync on adds. Lets carousel/grid cards do an in-memory lookup instead
     /// of a per-card SwiftData fetch (the BrowseView grid can surface dozens of
@@ -123,7 +124,7 @@ final class ExploreViewModel {
             cache.upsertCachedCollectionType(subjectId: subject.id, type: .wish, subjectType: subject.type)
             collectionOverlay[subject.id] = .wish
         } catch {
-            errorMessage = error.localizedDescription
+            actionError = error.localizedDescription
         }
     }
 
