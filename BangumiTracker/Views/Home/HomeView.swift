@@ -8,22 +8,33 @@ struct HomeView: View {
     @State private var showLogin = false
 
     var body: some View {
+        @Bindable var vm = viewModel
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
                 LargeNavHeader(title: "首页")
 
-                // 今日精选
-                TodayPickHero(subject: viewModel.todayPick)
-                    .padding(.top, 4)
+                if viewModel.errorMessage != nil
+                    && viewModel.todayPick == nil
+                    && viewModel.becauseYouWatch == nil
+                    && viewModel.hiddenGems.isEmpty
+                    && viewModel.timeCapsule == nil {
+                    ErrorRetryView(message: viewModel.errorMessage ?? "加载失败") {
+                        Task { await viewModel.loadAll() }
+                    }
+                } else {
+                    // 今日精选
+                    TodayPickHero(subject: viewModel.todayPick)
+                        .padding(.top, 4)
 
-                // 因为你在追《X》/ 标签巡游
-                becauseYouWatchSection
+                    // 因为你在追《X》/ 标签巡游
+                    becauseYouWatchSection
 
-                // 冷门佳作
-                hiddenGemsSection
+                    // 冷门佳作
+                    hiddenGemsSection
 
-                // 时光胶囊
-                timeCapsuleSection
+                    // 时光胶囊
+                    timeCapsuleSection
+                }
 
                 // 想看清单 (or a status-filtered view set from a Profile stat-card tap)
                 wantToWatchHeader
@@ -92,6 +103,7 @@ struct HomeView: View {
         .task(id: auth.isAuthenticated) {
             await viewModel.loadOnAppear()
         }
+        .errorToast($vm.actionError)
     }
 
     // MARK: - 想看清单 header

@@ -54,6 +54,7 @@ struct BrowseView: View {
     }
 
     var body: some View {
+        @Bindable var exploreBindable = exploreVM
         ScrollView {
             content
         }
@@ -61,6 +62,7 @@ struct BrowseView: View {
         .navigationBarTitleDisplayMode(.inline)
         .refreshable { await vm.load() }
         .task { await vm.load() }
+        .errorToast($exploreBindable.actionError)
     }
 
     @ViewBuilder

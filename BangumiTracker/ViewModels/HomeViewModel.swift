@@ -37,6 +37,7 @@ final class HomeViewModel {
     private var wishCollectedAtMap: [Int: Date] = [:]
     var isLoading = false
     var errorMessage: String?
+    var actionError: String?
 
     private let api: BangumiAPIClient
     private let cache: LocalCacheService
@@ -316,7 +317,7 @@ final class HomeViewModel {
             }
         } catch {
             wantToWatchList = original
-            errorMessage = error.localizedDescription
+            actionError = error.localizedDescription
         }
     }
 
@@ -336,7 +337,7 @@ final class HomeViewModel {
             }
         } catch {
             wantToWatchList = original
-            errorMessage = error.localizedDescription
+            actionError = error.localizedDescription
         }
     }
 
@@ -354,7 +355,7 @@ final class HomeViewModel {
             }
         } catch {
             wantToWatchList = original
-            errorMessage = error.localizedDescription
+            actionError = error.localizedDescription
         }
     }
 
@@ -369,7 +370,7 @@ final class HomeViewModel {
             }
             await loadWantToWatch()
         } catch {
-            errorMessage = error.localizedDescription
+            actionError = error.localizedDescription
         }
     }
 

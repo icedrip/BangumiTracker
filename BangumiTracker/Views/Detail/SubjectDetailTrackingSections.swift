@@ -348,8 +348,7 @@ struct MusicDiscSections: View {
         Binding(
             get: { expandedDiscs.contains(disc) },
             set: { newValue in
-                if newValue { expandedDiscs.insert(disc) }
-                else { expandedDiscs.remove(disc) }
+                if newValue { expandedDiscs.insert(disc) } else { expandedDiscs.remove(disc) }
             }
         )
     }

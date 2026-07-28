@@ -18,6 +18,7 @@ final class SearchViewModel {
     var selectedSearchTab: SearchTab = .subject
     var isSearching = false
     var errorMessage: String?
+    var actionError: String?
     /// Subject IDs the user has collected, best-effort seeded from the SwiftData
     /// cache. Drives the "已收藏" marker on subject search results; a subject
     /// collected but not yet in cache simply won't show the marker (the detail
@@ -144,9 +145,9 @@ final class SearchViewModel {
             payload.type = CollectionType.wish.rawValue
             try await api.updateCollection(subjectId: subject.id, payload: payload)
             collectedSubjectIds.insert(subject.id)
-            errorMessage = nil
+            actionError = nil
         } catch {
-            errorMessage = error.localizedDescription
+            actionError = error.localizedDescription
         }
     }
 
