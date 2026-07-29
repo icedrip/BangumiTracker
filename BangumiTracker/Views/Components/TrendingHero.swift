@@ -13,7 +13,7 @@ struct TrendingHero: View {
                         TrendingHeroCard(subject: subject)
                     }
                     .buttonStyle(.plain)
-                    .padding(.horizontal, 16)
+                    .padding(.horizontal, .horizontalPadding)
                 }
             }
             .tabViewStyle(.page(indexDisplayMode: .never))
@@ -25,7 +25,7 @@ struct TrendingHero: View {
         RoundedRectangle(cornerRadius: 20)
             .fill(Color(.systemGray5))
             .frame(height: 240)
-            .padding(.horizontal, 16)
+            .padding(.horizontal, .horizontalPadding)
     }
 }
 
@@ -58,7 +58,7 @@ private struct TrendingHeroCard: View {
 
             VStack(alignment: .leading, spacing: 8) {
                 Text("近期注目")
-                    .font(.system(size: 11, weight: .bold))
+                    .font(.caption2.weight(.bold))
                     .foregroundStyle(.white)
                     .padding(.horizontal, 8)
                     .padding(.vertical, 3)
@@ -66,7 +66,7 @@ private struct TrendingHeroCard: View {
                     .environment(\.colorScheme, .dark)
 
                 Text(subject.displayName)
-                    .font(.system(size: 22, weight: .bold))
+                    .font(.title2.weight(.bold))
                     .foregroundStyle(.white)
                     .lineLimit(2)
                     .multilineTextAlignment(.leading)
@@ -76,10 +76,10 @@ private struct TrendingHeroCard: View {
                     if let rating = subject.rating, rating.score > 0 {
                         HStack(spacing: 4) {
                             Image(systemName: "star.fill")
-                                .font(.system(size: 11))
+                                .font(.caption2)
                                 .foregroundStyle(.yellow)
                             Text(String(format: "%.1f", rating.score))
-                                .font(.system(size: 13, weight: .bold))
+                                .font(.subheadline.weight(.bold))
                                 .foregroundStyle(.white)
                         }
                         .padding(.horizontal, 8)
@@ -88,7 +88,7 @@ private struct TrendingHeroCard: View {
                     }
                     if let date = subject.date, !date.isEmpty {
                         Text(date)
-                            .font(.system(size: 12, weight: .medium))
+                            .font(.caption.weight(.medium))
                             .foregroundStyle(.white.opacity(0.95))
                             .shadow(color: .black.opacity(0.6), radius: 3, x: 0, y: 1)
                     }

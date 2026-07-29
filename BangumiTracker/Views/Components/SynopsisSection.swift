@@ -14,10 +14,10 @@ struct SynopsisSection: View {
     var body: some View {
         DetailSectionCard {
             Text("简介")
-                .font(.system(size: 15, weight: .semibold))
+                .font(.subheadline.weight(.semibold))
                 .foregroundColor(.secondary)
             Text(summary)
-                .font(.system(size: 15))
+                .font(.subheadline)
                 .lineSpacing(4)
                 .foregroundColor(.secondary)
                 // Only clamp when there's a toggle to reveal the rest — a short
@@ -29,7 +29,7 @@ struct SynopsisSection: View {
                 Button(isExpanded ? "收起" : "展开全文") {
                     isExpanded.toggle()
                 }
-                .font(.system(size: 14, weight: .medium))
+                .font(.callout.weight(.medium))
                 .foregroundColor(.blue)
                 .frame(maxWidth: .infinity, alignment: .trailing)
             }

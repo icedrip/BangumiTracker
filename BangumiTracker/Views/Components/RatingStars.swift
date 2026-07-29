@@ -18,7 +18,7 @@ struct RatingStars: View {
                     onRate?(index)
                 } label: {
                     Image(systemName: index <= rating ? "star.fill" : "star")
-                        .font(.system(size: 14))
+                        .font(.callout)
                         .foregroundColor(index <= rating ? .orange : Color(.systemGray4))
                         .frame(width: 28, height: 28)
                         .background(index <= rating ? Color.orange.opacity(0.15) : Color(.systemGray6))

@@ -8,7 +8,7 @@ struct CharactersSection: View {
     var body: some View {
         DetailSectionCard(spacing: 12) {
             Text("角色 / 声优")
-                .font(.system(size: 15, weight: .semibold))
+                .font(.subheadline.weight(.semibold))
                 .foregroundColor(.secondary)
 
             ForEach(characters.prefix(10)) { character in
@@ -20,7 +20,7 @@ struct CharactersSection: View {
 
             if characters.count > 10 {
                 Text("共 \(characters.count) 个角色")
-                    .font(.system(size: 12))
+                    .font(.caption)
                     .foregroundColor(.secondary)
                     .frame(maxWidth: .infinity, alignment: .center)
                     .padding(.top, 4)
@@ -45,11 +45,11 @@ struct CharacterRow: View {
             VStack(alignment: .leading, spacing: 1) {
                 HStack(spacing: 4) {
                     Text(character.displayName)
-                        .font(.system(size: 14, weight: .medium))
+                        .font(.callout.weight(.medium))
                         .foregroundColor(.primary)
                     if !character.roleText.isEmpty {
                         Text(character.roleText)
-                            .font(.system(size: 11))
+                            .font(.caption2)
                             .foregroundColor(.secondary)
                             .padding(.horizontal, 4)
                             .padding(.vertical, 1)
@@ -59,7 +59,7 @@ struct CharacterRow: View {
                 }
                 if let actor = character.actors?.first {
                     Text("CV: \(actor.name)")
-                        .font(.system(size: 12))
+                        .font(.caption)
                         .foregroundColor(.secondary)
                 }
             }
@@ -67,7 +67,7 @@ struct CharacterRow: View {
             Spacer()
 
             Image(systemName: "chevron.right")
-                .font(.system(size: 12, weight: .semibold))
+                .font(.caption.weight(.semibold))
                 .foregroundColor(.secondary)
         }
     }
@@ -81,7 +81,7 @@ struct PersonsSection: View {
     var body: some View {
         DetailSectionCard(spacing: 12) {
             Text("制作人员")
-                .font(.system(size: 15, weight: .semibold))
+                .font(.subheadline.weight(.semibold))
                 .foregroundColor(.secondary)
 
             ForEach(persons.prefix(10)) { person in
@@ -93,7 +93,7 @@ struct PersonsSection: View {
 
             if persons.count > 10 {
                 Text("共 \(persons.count) 位制作人员")
-                    .font(.system(size: 12))
+                    .font(.caption)
                     .foregroundColor(.secondary)
                     .frame(maxWidth: .infinity, alignment: .center)
                     .padding(.top, 4)
@@ -118,11 +118,11 @@ struct PersonRow: View {
             VStack(alignment: .leading, spacing: 1) {
                 HStack(spacing: 4) {
                     Text(person.displayName)
-                        .font(.system(size: 14, weight: .medium))
+                        .font(.callout.weight(.medium))
                         .foregroundColor(.primary)
                     if let position = person.position, !position.isEmpty {
                         Text(position)
-                            .font(.system(size: 11))
+                            .font(.caption2)
                             .foregroundColor(.secondary)
                             .padding(.horizontal, 4)
                             .padding(.vertical, 1)
@@ -135,7 +135,7 @@ struct PersonRow: View {
             Spacer()
 
             Image(systemName: "chevron.right")
-                .font(.system(size: 12, weight: .semibold))
+                .font(.caption.weight(.semibold))
                 .foregroundColor(.secondary)
         }
     }
@@ -149,7 +149,7 @@ struct RelatedSection: View {
     var body: some View {
         DetailSectionCard(spacing: 10) {
             Text("相关作品")
-                .font(.system(size: 15, weight: .semibold))
+                .font(.subheadline.weight(.semibold))
                 .foregroundColor(.secondary)
 
             ForEach(relatedSubjects) { related in
@@ -177,11 +177,11 @@ struct RelatedSubjectRow: View {
 
             VStack(alignment: .leading, spacing: 1) {
                 Text(related.displayName)
-                    .font(.system(size: 14, weight: .medium))
+                    .font(.callout.weight(.medium))
                     .foregroundColor(.primary)
                 if let relation = related.relation, !relation.isEmpty {
                     Text(relation)
-                        .font(.system(size: 12))
+                        .font(.caption)
                         .foregroundColor(.secondary)
                 }
             }
@@ -189,7 +189,7 @@ struct RelatedSubjectRow: View {
             Spacer()
 
             Image(systemName: "chevron.right")
-                .font(.system(size: 12, weight: .semibold))
+                .font(.caption.weight(.semibold))
                 .foregroundColor(.secondary)
         }
     }

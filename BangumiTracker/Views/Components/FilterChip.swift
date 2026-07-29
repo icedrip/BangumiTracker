@@ -10,7 +10,7 @@ struct FilterChip: View {
             onTap?()
         } label: {
             Text(label)
-                .font(.system(size: 13, weight: .medium))
+                .font(.subheadline.weight(.medium))
                 .foregroundColor(isActive ? .white : .primary)
                 .padding(.horizontal, 12)
                 .padding(.vertical, 6)
@@ -35,10 +35,10 @@ struct DiscoverChip: View {
             onTap?()
         } label: {
             Text(label)
-                .font(.system(size: 14, weight: .medium))
+                .font(.callout.weight(.medium))
                 .foregroundColor(isActive ? .white : .primary)
-                .padding(.horizontal, 16)
-                .padding(.vertical, 8)
+                .padding(.horizontal, .horizontalPadding)
+                .padding(.vertical, .tightSpacing)
                 .background(isActive ? Color.blue : Color(.systemBackground))
                 .clipShape(Capsule())
                 .overlay(

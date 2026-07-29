@@ -32,7 +32,7 @@ struct ProfileInsightCard: View {
             .shadow(color: .black.opacity(0.08), radius: 2, y: 1)
         } else {
             Text("看完一些作品后，这里会生成你的观看画像")
-                .font(.system(size: 14))
+                .font(.callout)
                 .foregroundColor(.secondary)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(16)
@@ -56,7 +56,7 @@ struct ProfileInsightCard: View {
                 }
             } else {
                 Text("还没有评分数据")
-                    .font(.system(size: 12))
+                    .font(.caption)
                     .foregroundColor(.secondary)
             }
         }
@@ -75,7 +75,7 @@ struct ProfileInsightCard: View {
                 }
             } else {
                 Text("暂无数据")
-                    .font(.system(size: 12))
+                    .font(.caption)
                     .foregroundColor(.secondary)
             }
         }
@@ -92,7 +92,7 @@ struct ProfileInsightCard: View {
                 }
             } else {
                 Text("暂无数据")
-                    .font(.system(size: 12))
+                    .font(.caption)
                     .foregroundColor(.secondary)
             }
         }
@@ -118,14 +118,14 @@ struct ProfileInsightCard: View {
 
     private func rowLabel(_ text: String) -> some View {
         Text(text)
-            .font(.system(size: 13, weight: .semibold))
+            .font(.subheadline.weight(.semibold))
             .foregroundColor(.secondary)
     }
 
     private func scorePair(label: String, score: Double) -> some View {
         VStack(alignment: .leading, spacing: 1) {
             Text(label)
-                .font(.system(size: 11))
+                .font(.caption2)
                 .foregroundColor(.secondary)
             // Dynamic text style (not a fixed 18pt) so the score scales with
             // Dynamic Type instead of truncating at larger accessibility sizes.
@@ -154,7 +154,7 @@ struct ProfileInsightCard: View {
             }
         }
         return Text(text)
-            .font(.system(size: 12, weight: .semibold))
+            .font(.caption.weight(.semibold))
             .foregroundColor(color)
             .padding(.horizontal, 10)
             .padding(.vertical, 4)
@@ -164,7 +164,7 @@ struct ProfileInsightCard: View {
 
     private func chip(_ text: String) -> some View {
         Text(text)
-            .font(.system(size: 12, weight: .medium))
+            .font(.caption.weight(.medium))
             .foregroundColor(.primary)
             .padding(.horizontal, 8)
             .padding(.vertical, 4)
@@ -177,7 +177,7 @@ struct ProfileInsightCard: View {
         return HStack(spacing: 4) {
             Circle().fill(color).frame(width: 6, height: 6)
             Text("\(label) \(pct)%")
-                .font(.system(size: 12, weight: .medium))
+                .font(.caption.weight(.medium))
                 .foregroundColor(.primary)
         }
         .padding(.horizontal, 8)

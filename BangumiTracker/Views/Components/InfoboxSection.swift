@@ -6,7 +6,7 @@ struct InfoboxSection: View {
     var body: some View {
         DetailSectionCard(spacing: 8) {
             Text("信息")
-                .font(.system(size: 15, weight: .semibold))
+                .font(.subheadline.weight(.semibold))
                 .foregroundColor(.secondary)
 
             // Grid auto-sizes the key column to the widest key, so a 5-char
@@ -19,10 +19,10 @@ struct InfoboxSection: View {
                     if let key = item.key, let value = item.value {
                         GridRow(alignment: .top) {
                             Text(key)
-                                .font(.system(size: 13))
+                                .font(.subheadline)
                                 .foregroundColor(.secondary)
                             Text(value.displayText)
-                                .font(.system(size: 13))
+                                .font(.subheadline)
                                 .foregroundColor(.primary)
                         }
                     }

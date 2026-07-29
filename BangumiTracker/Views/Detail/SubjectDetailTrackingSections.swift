@@ -39,10 +39,10 @@ struct StatusPill: View {
     var body: some View {
         Button(action: action) {
             Text(label)
-                .font(.system(size: 13, weight: .semibold))
+                .font(.subheadline.weight(.semibold))
                 .foregroundColor(isSelected ? .white : .primary)
                 .frame(maxWidth: .infinity)
-                .padding(.vertical, 8)
+                .padding(.vertical, .tightSpacing)
                 .background(isSelected ? Color.blue : Color(.systemBackground))
                 .clipShape(Capsule())
                 .overlay(
@@ -84,11 +84,11 @@ struct ProgressSection: View {
                 VStack(alignment: .leading, spacing: 6) {
                     HStack {
                         Text("第 \(watchedEpisodeCount) 集 / 共 \(totalEpisodes) 集")
-                            .font(.system(size: 16, weight: .semibold))
+                            .font(.body.weight(.semibold))
                         Spacer()
                         if totalEpisodes > 0 {
                             Text("\(Int(progressRatio * 100))%")
-                                .font(.system(size: 13, weight: .medium))
+                                .font(.subheadline.weight(.medium))
                                 .foregroundColor(isComplete ? .green : .secondary)
                         }
                     }
@@ -98,7 +98,7 @@ struct ProgressSection: View {
 
                 Button(action: onMarkNext) {
                     Image(systemName: "plus")
-                        .font(.system(size: 18, weight: .semibold))
+                        .font(.title3.weight(.semibold))
                         .foregroundColor(.white)
                         .frame(width: 40, height: 40)
                         .background(isComplete ? Color.green : Color.blue)
@@ -125,9 +125,9 @@ struct BookProgressSection: View {
             HStack {
                 VStack(alignment: .leading, spacing: 2) {
                     Text("阅读进度")
-                        .font(.system(size: 15, weight: .semibold))
+                        .font(.subheadline.weight(.semibold))
                     Text("已读 \(epStatus) 话\(totalEps > 0 ? " / 共 \(totalEps) 话" : "")")
-                        .font(.system(size: 13))
+                        .font(.subheadline)
                         .foregroundColor(.secondary)
                 }
                 Spacer()
@@ -138,7 +138,7 @@ struct BookProgressSection: View {
             }
             HStack {
                 Text("卷数")
-                    .font(.system(size: 15, weight: .semibold))
+                    .font(.subheadline.weight(.semibold))
                     .foregroundColor(.secondary)
                 Spacer()
                 Stepper("\(volStatus)") { onAdjustVol(1) } onDecrement: { onAdjustVol(-1) }
@@ -164,7 +164,7 @@ struct EpisodesSection: View {
         DetailSectionCard(spacing: 10) {
             HStack {
                 Text("逐集标记")
-                    .font(.system(size: 15, weight: .semibold))
+                    .font(.subheadline.weight(.semibold))
                     .foregroundColor(.secondary)
                 Spacer()
                 batchButtons
@@ -173,7 +173,7 @@ struct EpisodesSection: View {
             let mainEpisodes = episodes.filter { $0.type == .main }
             if mainEpisodes.isEmpty {
                 Text("暂无章节信息")
-                    .font(.system(size: 13))
+                    .font(.subheadline)
                     .foregroundColor(.secondary)
                     .frame(maxWidth: .infinity, alignment: .center)
                     .padding(.vertical, 12)
@@ -205,7 +205,7 @@ struct EpisodesSection: View {
         HStack(spacing: 6) {
             Button(action: onMarkAll) {
                 Text(markAllLabel)
-                    .font(.system(size: 12, weight: .semibold))
+                    .font(.caption.weight(.semibold))
                     .foregroundColor(.white)
                     .padding(.horizontal, 10)
                     .padding(.vertical, 5)
@@ -216,7 +216,7 @@ struct EpisodesSection: View {
 
             Button(action: onUnmarkAll) {
                 Text("全部取消")
-                    .font(.system(size: 12, weight: .medium))
+                    .font(.caption.weight(.medium))
                     .foregroundColor(.secondary)
                     .padding(.horizontal, 10)
                     .padding(.vertical, 5)
@@ -255,7 +255,7 @@ struct MusicDiscSections: View {
         if discGroups.isEmpty {
             DetailSectionCard {
                 Text("暂无曲目信息")
-                    .font(.system(size: 13))
+                    .font(.subheadline)
                     .foregroundColor(.secondary)
                     .frame(maxWidth: .infinity, alignment: .center)
                     .padding(.vertical, 12)
@@ -288,9 +288,9 @@ struct MusicDiscSections: View {
                 HStack {
                     VStack(alignment: .leading, spacing: 2) {
                         Text("Disc \(group.disc)")
-                            .font(.system(size: 15, weight: .semibold))
+                            .font(.subheadline.weight(.semibold))
                         Text("\(group.tracks.count) 曲")
-                            .font(.system(size: 12))
+                            .font(.caption)
                             .foregroundColor(.secondary)
                     }
                     Spacer()
@@ -309,12 +309,12 @@ struct MusicDiscSections: View {
 
         HStack(spacing: 10) {
             Text(trackNumber)
-                .font(.system(size: 13, weight: .medium, design: .monospaced))
+                .font(.subheadline.weight(.medium))
                 .foregroundColor(.secondary)
                 .frame(width: 24, alignment: .trailing)
 
             Text(name)
-                .font(.system(size: 13))
+                .font(.subheadline)
                 .foregroundColor(name.isEmpty ? .secondary : .primary)
                 .lineLimit(1)
 
@@ -322,7 +322,7 @@ struct MusicDiscSections: View {
 
             if !duration.isEmpty {
                 Text(duration)
-                    .font(.system(size: 11, design: .monospaced))
+                    .font(.caption2)
                     .foregroundColor(.secondary)
             }
         }

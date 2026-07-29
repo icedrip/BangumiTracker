@@ -88,10 +88,10 @@ private struct CharacterHeaderSection: View {
 
             VStack(alignment: .leading, spacing: 4) {
                 Text(detail.displayName)
-                    .font(.system(size: 20, weight: .bold))
+                    .font(.title2.weight(.bold))
                 if detail.nameCn != detail.name, !detail.name.isEmpty {
                     Text(detail.name)
-                        .font(.system(size: 14))
+                        .font(.callout)
                         .foregroundColor(.secondary)
                 }
             }
@@ -107,7 +107,7 @@ private struct CharacterActorsSection: View {
     var body: some View {
         DetailSectionCard(spacing: 10) {
             Text("声优")
-                .font(.system(size: 15, weight: .semibold))
+                .font(.subheadline.weight(.semibold))
                 .foregroundColor(.secondary)
 
             ForEach(actors, id: \.id) { actor in
@@ -134,13 +134,13 @@ private struct ActorRow: View {
                 .clipShape(Circle())
 
             Text(actor.name)
-                .font(.system(size: 14, weight: .medium))
+                .font(.callout.weight(.medium))
                 .foregroundColor(.primary)
 
             Spacer()
 
             Image(systemName: "chevron.right")
-                .font(.system(size: 12, weight: .semibold))
+                .font(.caption.weight(.semibold))
                 .foregroundColor(.secondary)
         }
     }

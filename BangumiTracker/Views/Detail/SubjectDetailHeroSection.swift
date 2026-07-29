@@ -41,9 +41,9 @@ struct HeroSection: View {
 
             VStack(alignment: .leading, spacing: 4) {
                 Text(displayName)
-                    .font(.system(size: 24, weight: .bold))
+                    .font(.title.weight(.bold))
                 Text(metaText)
-                    .font(.system(size: 14))
+                    .font(.callout)
                     .opacity(0.9)
                 if let rating {
                     HStack(spacing: 4) {
@@ -51,16 +51,16 @@ struct HeroSection: View {
                         Text(String(format: "%.1f", rating.score))
                         if rating.total > 0 {
                             Text("· \(rating.total) 人评分")
-                                .font(.system(size: 12, weight: .regular))
+                                .font(.caption.weight(.regular))
                                 .foregroundColor(.white.opacity(0.8))
                         }
                     }
-                    .font(.system(size: 15, weight: .semibold))
+                    .font(.subheadline.weight(.semibold))
                     .foregroundColor(.orange)
                 }
             }
             .foregroundColor(.white)
-            .padding(.horizontal, 16)
+            .padding(.horizontal, .horizontalPadding)
             .padding(.bottom, 20)
         }
         .frame(maxWidth: .infinity)

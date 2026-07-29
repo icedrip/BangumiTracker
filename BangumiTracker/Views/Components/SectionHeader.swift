@@ -12,10 +12,10 @@ struct SectionHeader: View {
     var body: some View {
         HStack(alignment: .firstTextBaseline, spacing: 8) {
             Text(title)
-                .font(.system(size: 20, weight: .bold, design: .default))
+                .font(.title2.weight(.bold))
             if let subtitle {
                 Text(subtitle)
-                    .font(.system(size: 13))
+                    .font(.subheadline)
                     .foregroundColor(.secondary)
                     .lineLimit(1)
                     .truncationMode(.tail)
@@ -25,7 +25,7 @@ struct SectionHeader: View {
                 if let trailingRoute {
                     NavigationLink(value: trailingRoute) {
                         Text(trailingLabel)
-                            .font(.system(size: 15))
+                            .font(.subheadline)
                             .foregroundColor(.blue)
                     }
                     .buttonStyle(.plain)
@@ -34,7 +34,7 @@ struct SectionHeader: View {
                         onTrailingTap?()
                     } label: {
                         Text(trailingLabel)
-                            .font(.system(size: 15))
+                            .font(.subheadline)
                             .foregroundColor(.blue)
                     }
                     .buttonStyle(.plain)

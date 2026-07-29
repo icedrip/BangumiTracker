@@ -38,7 +38,7 @@ struct AddToCollectionSheet: View {
                         .clipShape(RoundedRectangle(cornerRadius: 6))
 
                         Text(subject.displayName)
-                            .font(.system(size: 15, weight: .semibold))
+                            .font(.subheadline.weight(.semibold))
                             .lineLimit(2)
                     }
                 }
@@ -52,10 +52,10 @@ struct AddToCollectionSheet: View {
                                     selectedStatus = status
                                 } label: {
                                     Text(status.displayName(for: SubjectType(rawValue: subject.type)))
-                                        .font(.system(size: 13, weight: .medium))
+                                        .font(.subheadline.weight(.medium))
                                         .foregroundColor(selectedStatus == status ? .white : .primary)
                                         .padding(.horizontal, 14)
-                                        .padding(.vertical, 8)
+                                        .padding(.vertical, .tightSpacing)
                                         .background(selectedStatus == status ? Color.blue : Color(.systemGray6))
                                         .clipShape(Capsule())
                                 }
@@ -72,12 +72,12 @@ struct AddToCollectionSheet: View {
                                 ForEach(tags, id: \.self) { tag in
                                     HStack(spacing: 4) {
                                         Text(tag)
-                                            .font(.system(size: 13))
+                                            .font(.subheadline)
                                         Button {
                                             tags.removeAll { $0 == tag }
                                         } label: {
                                             Image(systemName: "xmark.circle.fill")
-                                                .font(.system(size: 13))
+                                                .font(.subheadline)
                                                 .foregroundColor(.secondary)
                                         }
                                         .buttonStyle(.plain)
@@ -103,7 +103,7 @@ struct AddToCollectionSheet: View {
                 Section("评价") {
                     TextEditor(text: $comment)
                         .frame(minHeight: 80)
-                        .font(.system(size: 15))
+                        .font(.subheadline)
                 }
 
                 Section {
@@ -113,7 +113,7 @@ struct AddToCollectionSheet: View {
                 if let errorText {
                     Section {
                         Text(errorText)
-                            .font(.system(size: 13))
+                            .font(.subheadline)
                             .foregroundColor(.red)
                     }
                 }

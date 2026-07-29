@@ -22,26 +22,26 @@ struct ListRow: View {
 
                 VStack(alignment: .leading, spacing: 4) {
                     Text(collection.subject?.displayName ?? "作品 #\(collection.subjectId)")
-                        .font(.system(size: 16, weight: .semibold))
+                        .font(.body.weight(.semibold))
                         .foregroundColor(.primary)
                         .lineLimit(2)
 
                     Text(metaText)
-                        .font(.system(size: 13))
+                        .font(.subheadline)
                         .foregroundColor(.secondary)
 
                     if let rating = collection.subject?.rating {
                         HStack(spacing: 2) {
                             Image(systemName: "star.fill")
-                                .font(.system(size: 10))
+                                .font(.caption2)
                             Text(String(format: "%.1f", rating.score))
                         }
                         .foregroundColor(.orange)
-                        .font(.system(size: 13, weight: .semibold))
+                        .font(.subheadline.weight(.semibold))
                     }
 
                     Text(timestampText)
-                        .font(.system(size: 12))
+                        .font(.caption)
                         .foregroundColor(.secondary)
                 }
 
@@ -52,7 +52,7 @@ struct ListRow: View {
                     onStartWatching?()
                 } label: {
                     Text(startActionLabel)
-                        .font(.system(size: 13, weight: .semibold))
+                        .font(.subheadline.weight(.semibold))
                         .foregroundColor(.white)
                         .padding(.horizontal, 12)
                         .padding(.vertical, 6)

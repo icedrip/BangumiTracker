@@ -11,7 +11,7 @@ struct ManualIDEntry: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("或直接输入 Bangumi 条目 ID / URL")
-                .font(.system(size: 13))
+                .font(.subheadline)
                 .foregroundColor(.secondary)
 
             HStack(spacing: 8) {
@@ -19,7 +19,7 @@ struct ManualIDEntry: View {
                     .keyboardType(.URL)
                     .autocorrectionDisabled()
                     .textInputAutocapitalization(.never)
-                    .font(.system(size: 15))
+                    .font(.subheadline)
                     .padding(EdgeInsets(top: 8, leading: 12, bottom: 8, trailing: 12))
                     .background(Color(.systemBackground))
                     .clipShape(RoundedRectangle(cornerRadius: 8))
@@ -32,10 +32,10 @@ struct ManualIDEntry: View {
                     if let id = parsedSubjectId { onAdd?(id) }
                 } label: {
                     Text(isLoading ? "查找中…" : "添加")
-                        .font(.system(size: 13, weight: .semibold))
+                        .font(.subheadline.weight(.semibold))
                         .foregroundColor(.white)
                         .padding(.horizontal, 12)
-                        .padding(.vertical, 8)
+                        .padding(.vertical, .tightSpacing)
                         .background(parsedSubjectId == nil ? Color.gray : Color.blue)
                         .clipShape(RoundedRectangle(cornerRadius: 8))
                 }
@@ -44,7 +44,7 @@ struct ManualIDEntry: View {
 
             if let errorMessage, !errorMessage.isEmpty {
                 Text(errorMessage)
-                    .font(.system(size: 12))
+                    .font(.caption)
                     .foregroundColor(.red)
             }
         }
@@ -87,19 +87,19 @@ struct SearchResultRow: View {
 
                     VStack(alignment: .leading, spacing: 2) {
                         Text(subject.displayName)
-                            .font(.system(size: 15, weight: .medium))
+                            .font(.subheadline.weight(.medium))
                             .foregroundColor(.primary)
                         Text(metaText)
-                            .font(.system(size: 12))
+                            .font(.caption)
                             .foregroundColor(.secondary)
                         if let rating = subject.rating, rating.score > 0 {
                             HStack(spacing: 2) {
                                 Image(systemName: "star.fill")
-                                    .font(.system(size: 10))
+                                    .font(.caption2)
                                 Text(String(format: "%.1f", rating.score))
                             }
                             .foregroundColor(.orange)
-                            .font(.system(size: 12, weight: .semibold))
+                            .font(.caption.weight(.semibold))
                         }
                     }
 
@@ -110,7 +110,7 @@ struct SearchResultRow: View {
 
             if isCollected {
                 Text("已收藏")
-                    .font(.system(size: 12, weight: .semibold))
+                    .font(.caption.weight(.semibold))
                     .foregroundColor(.green)
                     .padding(.horizontal, 12)
                     .padding(.vertical, 6)
@@ -119,7 +119,7 @@ struct SearchResultRow: View {
             } else if let onQuickAdd {
                 Button(action: onQuickAdd) {
                     Text("+ \(CollectionType.wish.displayName(for: SubjectType(rawValue: subject.type)))")
-                        .font(.system(size: 13, weight: .semibold))
+                        .font(.subheadline.weight(.semibold))
                         .foregroundColor(.white)
                         .padding(.horizontal, 12)
                         .padding(.vertical, 6)
@@ -129,7 +129,7 @@ struct SearchResultRow: View {
                 .buttonStyle(.plain)
             }
         }
-        .padding(.horizontal, 16)
+        .padding(.horizontal, .horizontalPadding)
         .padding(.vertical, 10)
     }
 
@@ -157,16 +157,16 @@ struct CharacterSearchRow: View {
 
                 VStack(alignment: .leading, spacing: 2) {
                     Text(character.displayName)
-                        .font(.system(size: 15, weight: .medium))
+                        .font(.subheadline.weight(.medium))
                         .foregroundColor(.primary)
                     if character.nameCn != character.name, !character.name.isEmpty {
                         Text(character.name)
-                            .font(.system(size: 12))
+                            .font(.caption)
                             .foregroundColor(.secondary)
                     }
                     if let actor = character.actors?.first {
                         Text("CV: \(actor.name)")
-                            .font(.system(size: 12))
+                            .font(.caption)
                             .foregroundColor(.secondary)
                     }
                 }
@@ -174,10 +174,10 @@ struct CharacterSearchRow: View {
                 Spacer()
 
                 Image(systemName: "chevron.right")
-                    .font(.system(size: 12, weight: .semibold))
+                    .font(.caption.weight(.semibold))
                     .foregroundColor(.secondary)
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, .horizontalPadding)
             .padding(.vertical, 10)
         }
         .buttonStyle(.plain)
@@ -200,11 +200,11 @@ struct PersonSearchRow: View {
 
                 VStack(alignment: .leading, spacing: 2) {
                     Text(person.displayName)
-                        .font(.system(size: 15, weight: .medium))
+                        .font(.subheadline.weight(.medium))
                         .foregroundColor(.primary)
                     if !person.careerText.isEmpty {
                         Text(person.careerText)
-                            .font(.system(size: 12))
+                            .font(.caption)
                             .foregroundColor(.secondary)
                     }
                 }
@@ -212,10 +212,10 @@ struct PersonSearchRow: View {
                 Spacer()
 
                 Image(systemName: "chevron.right")
-                    .font(.system(size: 12, weight: .semibold))
+                    .font(.caption.weight(.semibold))
                     .foregroundColor(.secondary)
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, .horizontalPadding)
             .padding(.vertical, 10)
         }
         .buttonStyle(.plain)
@@ -250,7 +250,7 @@ struct SkeletonSearchRow: View {
                     .frame(width: 120, height: 12)
             }
         }
-        .padding(.horizontal, 16)
+        .padding(.horizontal, .horizontalPadding)
         .padding(.vertical, 10)
         .shimmer()
     }

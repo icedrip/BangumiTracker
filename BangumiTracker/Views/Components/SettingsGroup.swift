@@ -27,21 +27,21 @@ struct SettingsRow: View {
             } label: {
                 HStack {
                     Text(label)
-                        .font(.system(size: 16))
+                        .font(.body)
                         .foregroundColor(.primary)
                     Spacer()
                     if let value {
                         Text(value)
-                            .font(.system(size: 16))
+                            .font(.body)
                             .foregroundColor(.secondary)
                     }
                     if showChevron {
                         Image(systemName: "chevron.right")
-                            .font(.system(size: 14, weight: .semibold))
+                            .font(.callout.weight(.semibold))
                             .foregroundColor(Color(.systemGray4))
                     }
                 }
-                .padding(.horizontal, 16)
+                .padding(.horizontal, .horizontalPadding)
                 .padding(.vertical, 12)
                 .frame(minHeight: 44)
             }

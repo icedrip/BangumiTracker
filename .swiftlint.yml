@@ -1,0 +1,28 @@
+# BangumiTracker SwiftLint rules
+disabled_rules:
+  - trailing_whitespace
+  - line_length
+  - identifier_name
+  - type_name
+  - function_body_length
+  - file_length
+  - type_body_length
+  - cyclomatic_complexity
+
+opt_in_rules:
+  - empty_count
+  - empty_string
+  - first_where
+  - closure_spacing
+  - convenience_type
+  - sorted_first_last
+  - yoda_condition
+
+included:
+  - BangumiTracker
+  - BangumiWidgets
+
+excluded:
+  - build
+  - BangumiTracker.xcodeproj
+  - BangumiWidgets-Info.plist

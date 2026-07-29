@@ -25,9 +25,9 @@ struct ProfileView: View {
 
                     VStack(alignment: .leading, spacing: 2) {
                         Text(viewModel.userInfo?.nickname ?? "未登录")
-                            .font(.system(size: 20, weight: .bold))
+                            .font(.title2.weight(.bold))
                         Text(viewModel.userInfo.map { "@\($0.username) · Bangumi 用户" } ?? "请先登录 Bangumi 账号")
-                            .font(.system(size: 13))
+                            .font(.subheadline)
                             .foregroundColor(.secondary)
                     }
 
@@ -35,7 +35,7 @@ struct ProfileView: View {
 
                     if !auth.isAuthenticated {
                         Image(systemName: "chevron.right")
-                            .font(.system(size: 14, weight: .semibold))
+                            .font(.callout.weight(.semibold))
                             .foregroundColor(.secondary)
                     }
                 }
@@ -43,7 +43,7 @@ struct ProfileView: View {
                 .background(Color(.systemBackground))
                 .clipShape(RoundedRectangle(cornerRadius: 12))
                 .shadow(color: .black.opacity(0.08), radius: 2, y: 1)
-                .padding(.horizontal, 16)
+                .padding(.horizontal, .horizontalPadding)
 
                 if auth.isAuthenticated {
                     headerContent
@@ -71,17 +71,17 @@ struct ProfileView: View {
                             }
                         }
                         Text("无法加载，下拉刷新")
-                            .font(.system(size: 12))
+                            .font(.caption)
                             .foregroundColor(.secondary)
                     }
-                    .padding(.horizontal, 16)
+                    .padding(.horizontal, .horizontalPadding)
                 } else if viewModel.stats.isEmpty {
                     HStack(spacing: 8) {
                         ForEach(ProfileViewModel.displayedStatTypes, id: \.rawValue) { type in
                             StatCard(label: type.displayName, count: 0, color: type.displayColor)
                         }
                     }
-                    .padding(.horizontal, 16)
+                    .padding(.horizontal, .horizontalPadding)
                 } else {
                     HStack(spacing: 8) {
                         ForEach(viewModel.stats) { stat in
@@ -94,35 +94,35 @@ struct ProfileView: View {
                             }
                         }
                     }
-                    .padding(.horizontal, 16)
+                    .padding(.horizontal, .horizontalPadding)
                 }
 
                 // Viewing profile — derived from the watched collection
                 Text("观看画像")
-                    .font(.system(size: 20, weight: .bold, design: .default))
-                    .padding(.horizontal, 16)
+                    .font(.title2.weight(.bold))
+                    .padding(.horizontal, .horizontalPadding)
 
                 ProfileInsightCard(insights: viewModel.insights, genres: viewModel.genres)
-                    .padding(.horizontal, 16)
+                    .padding(.horizontal, .horizontalPadding)
 
                 // Settings
                 Text("设置")
-                    .font(.system(size: 20, weight: .bold, design: .default))
-                    .padding(.horizontal, 16)
+                    .font(.title2.weight(.bold))
+                    .padding(.horizontal, .horizontalPadding)
 
                 SettingsGroup {
                     NavigationLink(value: AppRoute.settings) {
                         SettingsRow(label: "应用设置", showDivider: false)
                     }
                 }
-                .padding(.horizontal, 16)
+                .padding(.horizontal, .horizontalPadding)
 
                 SettingsGroup {
                     SettingsRow(label: "版本", value: "1.0.0", showChevron: false)
                 }
-                .padding(.horizontal, 16)
+                .padding(.horizontal, .horizontalPadding)
             }
-            .padding(.vertical, 8)
+            .padding(.vertical, .tightSpacing)
         }
         .navigationTitle("我的")
         .navigationBarTitleDisplayMode(.inline)

@@ -22,9 +22,9 @@ struct LoginPromptCard: View {
 
                 VStack(alignment: .leading, spacing: 3) {
                     Text(title)
-                        .font(.system(size: 16, weight: .semibold))
+                        .font(.body.weight(.semibold))
                     Text(description)
-                        .font(.system(size: 13))
+                        .font(.subheadline)
                         .foregroundColor(.secondary)
                         .fixedSize(horizontal: false, vertical: true)
                 }
@@ -35,7 +35,7 @@ struct LoginPromptCard: View {
                 auth.presentLogin = true
             } label: {
                 Text("登录 Bangumi")
-                    .font(.system(size: 15, weight: .semibold))
+                    .font(.subheadline.weight(.semibold))
                     .foregroundColor(.white)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 11)

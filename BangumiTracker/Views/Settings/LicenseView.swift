@@ -9,42 +9,42 @@ struct LicenseView: View {
             VStack(alignment: .leading, spacing: 16) {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Kingfisher")
-                        .font(.system(size: 16, weight: .semibold))
+                        .font(.body.weight(.semibold))
                     Text("https://github.com/onevcat/Kingfisher")
-                        .font(.system(size: 12))
+                        .font(.caption)
                         .foregroundColor(.secondary)
                     Text("© Wei Wang (onevcat) — MIT License")
-                        .font(.system(size: 11))
+                        .font(.caption2)
                         .foregroundColor(.secondary)
                 }
                 Text(Self.kingfisherLicense)
-                    .font(.system(size: 12))
+                    .font(.caption)
                     .foregroundColor(.secondary)
 
                 Divider()
 
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Apple 框架")
-                        .font(.system(size: 16, weight: .semibold))
+                        .font(.body.weight(.semibold))
                     Text("SwiftUI · SwiftData · Foundation · UIKit")
-                        .font(.system(size: 12))
+                        .font(.caption)
                         .foregroundColor(.secondary)
                 }
                 Text("随 iOS SDK 提供，受 Apple 软件许可协议约束。")
-                    .font(.system(size: 12))
+                    .font(.caption)
                     .foregroundColor(.secondary)
 
                 Divider()
 
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Bangumi API")
-                        .font(.system(size: 16, weight: .semibold))
+                        .font(.body.weight(.semibold))
                     Text("https://bangumi.github.io/api")
-                        .font(.system(size: 12))
+                        .font(.caption)
                         .foregroundColor(.secondary)
                 }
                 Text("数据来源为 Bangumi (bgm.tv)，本应用为第三方客户端，不附属于 Bangumi。")
-                    .font(.system(size: 12))
+                    .font(.caption)
                     .foregroundColor(.secondary)
             }
             .padding(16)

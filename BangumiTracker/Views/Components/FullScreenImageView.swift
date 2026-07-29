@@ -96,7 +96,7 @@ struct FullScreenImageView: View {
                 HStack {
                     if let title {
                         Text(title)
-                            .font(.system(size: 17, weight: .semibold))
+                            .font(.body.weight(.semibold))
                             .foregroundColor(.white)
                             .lineLimit(1)
                     }
@@ -105,12 +105,12 @@ struct FullScreenImageView: View {
                         dismiss()
                     } label: {
                         Image(systemName: "xmark.circle.fill")
-                            .font(.system(size: 28))
+                            .font(.title)
                             .foregroundColor(.white.opacity(0.8))
                     }
                     .accessibilityLabel("关闭")
                 }
-                .padding(.horizontal, 16)
+                .padding(.horizontal, .horizontalPadding)
                 .padding(.top, 12)
                 Spacer()
             }

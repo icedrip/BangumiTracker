@@ -15,10 +15,10 @@ struct EmptyStateView: View {
                 .padding(.bottom, 8)
 
             Text(title)
-                .font(.system(size: 20, weight: .bold, design: .default))
+                .font(.title2.weight(.bold))
 
             Text(description)
-                .font(.system(size: 14))
+                .font(.callout)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
                 .frame(maxWidth: 240)
@@ -28,7 +28,7 @@ struct EmptyStateView: View {
                     onAction?()
                 } label: {
                     Text(actionLabel)
-                        .font(.system(size: 15, weight: .semibold))
+                        .font(.subheadline.weight(.semibold))
                         .foregroundColor(.white)
                         .padding(.horizontal, 24)
                         .padding(.vertical, 10)

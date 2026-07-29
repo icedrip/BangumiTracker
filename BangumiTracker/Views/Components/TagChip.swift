@@ -10,7 +10,7 @@ struct TagChip: View {
             onTap?()
         } label: {
             Text(label)
-                .font(.system(size: 13, weight: .medium))
+                .font(.subheadline.weight(.medium))
                 .foregroundColor(isAddButton ? .blue : .primary)
                 // Single-line so FlowLayout wraps chips, not their text. A chip
                 // wider than the row is then truncated with … by FlowLayout's

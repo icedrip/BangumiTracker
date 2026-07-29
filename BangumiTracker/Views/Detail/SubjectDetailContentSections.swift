@@ -8,7 +8,7 @@ struct TagsSection: View {
     var body: some View {
         DetailSectionCard {
             Text("标签")
-                .font(.system(size: 15, weight: .semibold))
+                .font(.subheadline.weight(.semibold))
                 .foregroundColor(.secondary)
             // FlowLayout packs each chip at its natural width and wraps to the
             // next row when the next chip won't fit — unlike LazyVGrid's
@@ -38,7 +38,7 @@ struct MyTagsSection: View {
     var body: some View {
         DetailSectionCard {
             Text("我的标签")
-                .font(.system(size: 15, weight: .semibold))
+                .font(.subheadline.weight(.semibold))
                 .foregroundColor(.secondary)
             FlowLayout(spacing: 8) {
                 ForEach(tags, id: \.self) { tag in
@@ -67,7 +67,7 @@ struct ReviewSection: View {
     var body: some View {
         DetailSectionCard(spacing: 10) {
             Text("我的评价")
-                .font(.system(size: 15, weight: .semibold))
+                .font(.subheadline.weight(.semibold))
                 .foregroundColor(.secondary)
 
             HStack(spacing: 12) {
@@ -89,13 +89,13 @@ struct ReviewSection: View {
             Button(action: onEditComment) {
                 HStack(spacing: 6) {
                     Image(systemName: "square.and.pencil")
-                        .font(.system(size: 13))
+                        .font(.subheadline)
                     Text("编辑评价")
-                        .font(.system(size: 14, weight: .medium))
+                        .font(.callout.weight(.medium))
                 }
                 .foregroundColor(.blue)
                 .frame(maxWidth: .infinity)
-                .padding(.vertical, 8)
+                .padding(.vertical, .tightSpacing)
                 .background(Color(.systemBackground))
                 .clipShape(RoundedRectangle(cornerRadius: 8))
                 .overlay(
@@ -121,7 +121,7 @@ struct ScoreCircle: View {
                 .stroke(Color.orange, style: StrokeStyle(lineWidth: 3, lineCap: .round))
                 .rotationEffect(.degrees(-90))
             Text("\(displayRating)")
-                .font(.system(size: 14, weight: .bold, design: .rounded))
+                .font(.callout.weight(.bold))
                 .foregroundColor(.orange)
         }
         .frame(width: 36, height: 36)
@@ -139,7 +139,7 @@ struct CommentBubble: View {
                 .frame(width: 3)
                 .padding(.trailing, 10)
             Text("\"\(comment)\"")
-                .font(.system(size: 14))
+                .font(.callout)
                 .foregroundColor(.secondary)
                 .italic()
                 .lineSpacing(2)

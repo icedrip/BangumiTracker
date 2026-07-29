@@ -10,10 +10,10 @@ struct StatCard: View {
     var body: some View {
         VStack(spacing: 2) {
             Text(showError ? "--" : "\(count)")
-                .font(.system(size: 24, weight: .bold, design: .rounded))
+                .font(.title.weight(.bold))
                 .foregroundColor(showError ? .secondary : color)
             Text(label)
-                .font(.system(size: 12))
+                .font(.caption)
                 .foregroundColor(.secondary)
         }
         .frame(maxWidth: .infinity)

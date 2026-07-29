@@ -85,15 +85,15 @@ private struct PersonHeaderSection: View {
 
             VStack(alignment: .leading, spacing: 4) {
                 Text(detail.displayName)
-                    .font(.system(size: 20, weight: .bold))
+                    .font(.title2.weight(.bold))
                 if detail.nameCn != detail.name, !detail.name.isEmpty {
                     Text(detail.name)
-                        .font(.system(size: 14))
+                        .font(.callout)
                         .foregroundColor(.secondary)
                 }
                 if !detail.careerText.isEmpty {
                     Text(detail.careerText)
-                        .font(.system(size: 13))
+                        .font(.subheadline)
                         .foregroundColor(.secondary)
                         .padding(.horizontal, 6)
                         .padding(.vertical, 2)
