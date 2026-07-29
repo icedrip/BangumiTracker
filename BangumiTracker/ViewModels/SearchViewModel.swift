@@ -18,6 +18,7 @@ final class SearchViewModel {
     var selectedSearchTab: SearchTab = .subject
     var isSearching = false
     var errorMessage: String?
+    var actionError: String?
     /// Subject IDs the user has collected, best-effort seeded from the SwiftData
     /// cache. Drives the "已收藏" marker on subject search results; a subject
     /// collected but not yet in cache simply won't show the marker (the detail
@@ -66,7 +67,7 @@ final class SearchViewModel {
             case .subject:
                 let r = try await api.searchSubjects(keyword: keyword)
                 guard token == searchToken else { return }
-                searchResults = r
+                searchResults = r.withoutNSFW
             case .character:
                 let r = try await api.searchCharacters(keyword: keyword)
                 guard token == searchToken else { return }
@@ -140,13 +141,11 @@ final class SearchViewModel {
     /// across Home/Explore/Watching/Search — no panel, per PRD 5.2.11).
     func addToWishlist(_ subject: Subject) async {
         do {
-            var payload = UserSubjectCollectionModifyPayload()
-            payload.type = CollectionType.wish.rawValue
-            try await api.updateCollection(subjectId: subject.id, payload: payload)
+            try await CollectionService(api: api, cache: cache).addToWishlist(subjectId: subject.id)
             collectedSubjectIds.insert(subject.id)
             errorMessage = nil
         } catch {
-            errorMessage = error.localizedDescription
+            actionError = error.localizedDescription
         }
     }
 

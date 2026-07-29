@@ -13,11 +13,12 @@ final class LocalCacheService {
 
     // MARK: - Subjects
 
-    func cacheSubjects(_ subjects: [Subject]) {
+    func cacheSubjects(_ subjects: [Subject]) throws {
         for subject in subjects {
             upsertSubject(subject)
         }
-        save()
+        try saveAndThrow()
+        lastCollectionCacheAt = Date()
     }
 
     @discardableResult
@@ -77,11 +78,11 @@ final class LocalCacheService {
 
     // MARK: - Collections
 
-    func cacheCollections(_ collections: [UserSubjectCollection]) {
+    func cacheCollections(_ collections: [UserSubjectCollection]) throws {
         for collection in collections {
             upsertCollection(collection)
         }
-        save()
+        try saveAndThrow()
     }
 
     private func upsertCollection(_ collection: UserSubjectCollection) {
@@ -113,7 +114,7 @@ final class LocalCacheService {
     }
 
     func getCachedCollections(type: CollectionType? = nil) -> [CachedUserCollection] {
-        let descriptor: FetchDescriptor<CachedUserCollection>
+        var descriptor: FetchDescriptor<CachedUserCollection>
         if let type {
             let raw = type.rawValue
             descriptor = FetchDescriptor<CachedUserCollection>(
@@ -125,8 +126,25 @@ final class LocalCacheService {
                 sortBy: [SortDescriptor(\.cachedAt, order: .reverse)]
             )
         }
+        // Safety cap: 5000 entries prevents runaway memory on @MainActor fetches
+        // while covering all practical collection sizes.
+        descriptor.fetchLimit = 5000
         return (try? modelContext.fetch(descriptor)) ?? []
     }
+
+    func cachedCollectionCount() -> Int {
+        let descriptor = FetchDescriptor<CachedUserCollection>()
+        return (try? modelContext.fetchCount(descriptor)) ?? 0
+    }
+
+    var lastCollectionCacheAt: Date? {
+        get { UserDefaults.standard.object(forKey: Self.lastCollectionCacheKey) as? Date }
+        set {
+            if let newValue { UserDefaults.standard.set(newValue, forKey: Self.lastCollectionCacheKey) }
+            else { UserDefaults.standard.removeObject(forKey: Self.lastCollectionCacheKey) }
+        }
+    }
+    private static let lastCollectionCacheKey = "cache.collection.lastWriteAt"
 
     func getCachedCollection(subjectId: Int) -> CachedUserCollection? {
         let predicate = #Predicate<CachedUserCollection> { $0.subjectId == subjectId }
@@ -304,10 +322,14 @@ final class LocalCacheService {
         do {
             try modelContext.save()
         } catch {
-            // Log via OSLog (print only reaches stderr) so the failure is
-            // visible in Console / `simctl log` — a swallowed SwiftData error
-            // here would otherwise silently drop un-persisted writes.
             Self.logger.error("save failed: \(error.localizedDescription)")
         }
+    }
+
+    /// Throwing variant for critical write paths (collection upserts, subject
+    /// caching) so the caller (ViewModel) can surface the error to the user
+    /// instead of silently dropping data.
+    private func saveAndThrow() throws {
+        try modelContext.save()
     }
 }

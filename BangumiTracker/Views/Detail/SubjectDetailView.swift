@@ -134,7 +134,7 @@ struct SubjectDetailView: View {
                         }
                     }
                     .frame(maxWidth: .infinity, alignment: .center)
-                    .padding(.horizontal, 16)
+                    .padding(.horizontal, .horizontalPadding)
                     .padding(.vertical, 16)
                 }
                 .frame(maxWidth: .infinity, alignment: .center)
@@ -154,7 +154,7 @@ struct SubjectDetailView: View {
         .ignoresSafeArea(edges: .top)
         // No horizontal safeAreaPadding on the ScrollView: the hero cover is a
         // direct child and must go edge-to-edge (full-bleed). Padded sections
-        // below apply their own .padding(.horizontal, 16) — that lives inside
+        // below apply their own .padding(.horizontal, .horizontalPadding) — that lives inside
         // the safe area, so landscape notch inset still applies on top of it.
         .navigationBarTitleDisplayMode(.inline)
         .navigationTitle("作品详情")

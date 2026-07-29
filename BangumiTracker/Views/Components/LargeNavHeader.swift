@@ -10,17 +10,18 @@ struct LargeNavHeader<Trailing: View>: View {
     var body: some View {
         HStack(alignment: .center, spacing: 8) {
             Text(title)
-                .font(.system(size: 34, weight: .bold))
+                .font(.largeTitle.weight(.bold))
                 .foregroundStyle(.primary)
                 .lineLimit(1)
                 .minimumScaleFactor(0.8)
             Spacer(minLength: 8)
             trailing()
         }
-        .padding(.horizontal, 16)
+        .padding(.horizontal, .horizontalPadding)
         .frame(minHeight: 44)
         .padding(.top, 4)
         .padding(.bottom, 8)
+        .accessibilityAddTraits(.isHeader)
     }
 }
 
@@ -37,7 +38,7 @@ struct NavBarIconButton<Label: View>: View {
 
     var body: some View {
         label()
-            .font(.system(size: 20, weight: .semibold))
+            .font(.title2.weight(.semibold))
             .foregroundStyle(.tint)
             .frame(width: 44, height: 44)
             .contentShape(Rectangle())

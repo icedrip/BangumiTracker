@@ -7,8 +7,15 @@ final class WatchingViewModel {
     var todayUpdates: [Subject] = []
     var watchingList: [UserSubjectCollection] = []
     var episodeProgress: [Int: (watched: Int, total: Int)] = [:]
+
+    /// URLs of currently visible subject images, for prefetching.
+    var visibleImageURLs: [String] {
+        todayUpdates.compactMap(\.imageURL) + watchingList.compactMap { $0.subject?.imageURL }
+    }
+
     var isLoading = false
     var errorMessage: String?
+    var actionError: String?
 
     private let api: BangumiAPIClient
     private let cache: LocalCacheService
@@ -48,7 +55,7 @@ final class WatchingViewModel {
         do {
             let collections = try await api.fetchUserCollections(type: CollectionType.watching.rawValue)
             watchingList = sortByAirWeekday(collections)
-            cache.cacheCollections(collections)
+            try cache.cacheCollections(collections)
             await WidgetDataService.writeWatchingData(from: watchingList)
         } catch BangumiAPIError.unauthorized {
             watchingList = []
@@ -224,11 +231,9 @@ final class WatchingViewModel {
 
     func addToWishlist(_ subject: Subject) async {
         do {
-            var payload = UserSubjectCollectionModifyPayload()
-            payload.type = CollectionType.wish.rawValue
-            try await api.updateCollection(subjectId: subject.id, payload: payload)
+            try await CollectionService(api: api, cache: cache).addToWishlist(subjectId: subject.id)
         } catch {
-            errorMessage = error.localizedDescription
+            actionError = error.localizedDescription
         }
     }
 

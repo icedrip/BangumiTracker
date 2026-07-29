@@ -102,25 +102,39 @@ enum WidgetDataService {
     /// 预下载封面图到 App Group 共享目录（widget 侧从该目录读取）
     private static func cacheImages(for items: [WidgetSubjectItem]) async {
         guard let cacheDir = imageCacheDir else { return }
-        let toDownload = items.filter { item in
+        var toDownload = items.filter { item in
             guard let urlString = item.imageURL, URL(string: urlString) != nil else { return false }
             let fileURL = cacheDir.appendingPathComponent("\(item.id).jpg")
             return !FileManager.default.fileExists(atPath: fileURL.path)
         }
         guard !toDownload.isEmpty else { return }
+        // Cap concurrent image downloads at 4 to avoid bursting 50+ requests
+        // simultaneously when the watching list is large.
+        let maxConcurrent = 4
         await withTaskGroup(of: Void.self) { group in
-            for item in toDownload {
-                group.addTask {
-                    guard let urlString = item.imageURL, let url = URL(string: urlString) else { return }
-                    let fileURL = cacheDir.appendingPathComponent("\(item.id).jpg")
-                    do {
-                        let (data, _) = try await URLSession.shared.data(from: url)
-                        try data.write(to: fileURL)
-                    } catch {
-                        // 图片下载失败可忽略，widget 会显示占位
-                    }
-                }
+            var index = toDownload.startIndex
+            for _ in 0..<min(maxConcurrent, toDownload.count) {
+                let item = toDownload[index]
+                group.addTask { await Self.writeImage(item: item, cacheDir: cacheDir) }
+                toDownload.formIndex(after: &index)
             }
+            for await _ in group {
+                guard index < toDownload.endIndex else { break }
+                let item = toDownload[index]
+                group.addTask { await Self.writeImage(item: item, cacheDir: cacheDir) }
+                toDownload.formIndex(after: &index)
+            }
+        }
+    }
+
+    private static func writeImage(item: WidgetSubjectItem, cacheDir: URL) async {
+        guard let urlString = item.imageURL, let url = URL(string: urlString) else { return }
+        let fileURL = cacheDir.appendingPathComponent("\(item.id).jpg")
+        do {
+            let (data, _) = try await URLSession.shared.data(from: url)
+            try data.write(to: fileURL)
+        } catch {
+            // 图片下载失败可忽略，widget 会显示占位
         }
     }
 

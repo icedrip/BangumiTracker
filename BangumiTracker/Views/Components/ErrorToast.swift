@@ -16,9 +16,9 @@ struct ErrorToast: View {
     var body: some View {
         HStack(spacing: 8) {
             Image(systemName: "exclamationmark.circle.fill")
-                .font(.system(size: 14))
+                .font(.callout)
             Text(message)
-                .font(.system(size: 13, weight: .medium))
+                .font(.subheadline.weight(.medium))
                 .lineLimit(2)
             Spacer(minLength: 0)
         }
@@ -26,7 +26,7 @@ struct ErrorToast: View {
         .padding(.horizontal, 14)
         .padding(.vertical, 10)
         .background(Capsule().fill(Color.red.opacity(0.92)))
-        .padding(.horizontal, 16)
+        .padding(.horizontal, .horizontalPadding)
         .shadow(color: .black.opacity(0.15), radius: 6, y: 2)
         .accessibilityElement(children: .combine)
         .accessibilityLabel("错误：\(message)")

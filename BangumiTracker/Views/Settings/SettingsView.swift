@@ -7,12 +7,14 @@ struct SettingsView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(HomeViewModel.self) private var home
     @Environment(ProfileViewModel.self) private var profile
+    @Environment(\.sessionCoordinator) private var coordinator
     @Environment(WatchingViewModel.self) private var watching
 
     @AppStorage(PreferenceKey.theme) private var theme = AppTheme.light.rawValue
     @AppStorage(PreferenceKey.defaultView) private var defaultView = DefaultListView.list.rawValue
     @AppStorage(PreferenceKey.startPage) private var startPage = StartPage.home.rawValue
     @AppStorage(PreferenceKey.scoreDisplay) private var scoreDisplay = ScoreDisplay.ten.rawValue
+    @AppStorage(PreferenceKey.nsfwVisible) private var nsfwVisible = false
 
     @State private var showLogoutConfirm = false
     @State private var showClearCacheConfirm = false
@@ -45,6 +47,7 @@ struct SettingsView: View {
                         Text(p.displayName).tag(p.rawValue)
                     }
                 }
+                Toggle("显示 18+ 内容", isOn: $nsfwVisible)
             }
 
             Section("账号") {
@@ -115,15 +118,7 @@ struct SettingsView: View {
     }
 
     private func logout() async {
-        // Shared teardown with the 401-driven expiry path: clears the keychain
-        // token, the API client's in-memory token + cache, and the per-user
-        // view-model/UserDefaults blobs so a re-login doesn't show the prior
-        // user's nickname/avatar/want-to-watch until /v0/me responds.
-        await endBangumiSession(
-            auth: auth, api: api,
-            home: home, profile: profile, watching: watching,
-            showAlert: false
-        )
+        await coordinator?.endSession(showAlert: false)
         statusMessage = "已退出登录"
     }
 
@@ -131,11 +126,7 @@ struct SettingsView: View {
     /// describes this as a logout/re-login flow, not just re-opening the sheet
     /// over the stale session).
     private func reauthorize() async {
-        await endBangumiSession(
-            auth: auth, api: api,
-            home: home, profile: profile, watching: watching,
-            showAlert: false
-        )
+        await coordinator?.endSession(showAlert: false)
         auth.presentLogin = true
     }
 

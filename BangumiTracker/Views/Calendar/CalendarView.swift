@@ -33,7 +33,7 @@ struct CalendarView: View {
                     }
                 }
             }
-            .padding(.vertical, 8)
+            .padding(.vertical, .tightSpacing)
         }
         .navigationTitle("开播日历")
         .navigationBarTitleDisplayMode(.inline)
@@ -64,15 +64,22 @@ struct CalendarView: View {
 
     private var headerControls: some View {
         HStack(spacing: 8) {
+            if expandedWeekday != Self.todayWeekdayId() {
+                Button("回到今天") {
+                    expandedWeekday = Self.todayWeekdayId()
+                }
+                .font(.caption.weight(.semibold))
+                .foregroundColor(.blue)
+            }
             Spacer()
             Text("仅看我在追的")
-                .font(.system(size: 12))
+                .font(.caption)
                 .foregroundColor(.secondary)
             Toggle("", isOn: $showOnlyFollowing)
                 .labelsHidden()
                 .scaleEffect(0.8)
         }
-        .padding(.horizontal, 16)
+        .padding(.horizontal, .horizontalPadding)
     }
 
     private func weekdaySelector(vm: CalendarViewModel, watchingIds: Set<Int>) -> some View {
@@ -87,7 +94,7 @@ struct CalendarView: View {
                 } label: {
                     VStack(spacing: 4) {
                         Text(Self.weekdayLabels[weekdayId - 1])
-                            .font(.system(size: 11))
+                            .font(.caption2)
                             .foregroundColor(.secondary)
                             .fontWeight(.semibold)
                         Text("\(dateNumber(for: weekdayId))")
@@ -110,19 +117,19 @@ struct CalendarView: View {
         .background(Color(.systemBackground))
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .shadow(color: .black.opacity(0.08), radius: 2, y: 1)
-        .padding(.horizontal, 16)
+        .padding(.horizontal, .horizontalPadding)
     }
 
     private func dayContent(vm: CalendarViewModel, watchingIds: Set<Int>, weekdayId: Int) -> some View {
         let items = filteredDayItems(vm: vm, weekdayId: weekdayId, watchingIds: watchingIds)
         return VStack(alignment: .leading, spacing: 8) {
             Text(weekdayTitle(weekdayId))
-                .font(.system(size: 20, weight: .bold, design: .default))
-                .padding(.horizontal, 16)
+                .font(.title2.weight(.bold))
+                .padding(.horizontal, .horizontalPadding)
 
             if items.isEmpty {
                 Text(emptyStateText(for: weekdayId))
-                    .font(.system(size: 14))
+                    .font(.callout)
                     .foregroundColor(.secondary)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 24)
@@ -132,7 +139,7 @@ struct CalendarView: View {
                         calendarEventRow(slim: slim, watchingIds: watchingIds)
                     }
                 }
-                .padding(.horizontal, 16)
+                .padding(.horizontal, .horizontalPadding)
             }
         }
     }
@@ -165,7 +172,7 @@ struct CalendarView: View {
 
                 VStack(alignment: .leading, spacing: 3) {
                     Text(slim.displayName)
-                        .font(.system(size: 14, weight: .semibold))
+                        .font(.callout.weight(.semibold))
                         .lineLimit(2)
 
                     HStack(spacing: 6) {
@@ -174,7 +181,7 @@ struct CalendarView: View {
                             Text("·")
                             HStack(spacing: 2) {
                                 Image(systemName: "star.fill")
-                                    .font(.system(size: 9))
+                                    .font(.caption2)
                                 Text(String(format: "%.1f", rating.score))
                             }
                             .foregroundColor(.orange)
@@ -185,7 +192,7 @@ struct CalendarView: View {
                                 .foregroundColor(.secondary)
                         }
                     }
-                    .font(.system(size: 12))
+                    .font(.caption)
                     .foregroundColor(.secondary)
 
                     if let progress = followingProgress(for: slim.id, type: slim.type, watchingIds: watchingIds) {
@@ -194,7 +201,7 @@ struct CalendarView: View {
                                 .tint(progress.fraction >= 1.0 ? .green : .blue)
                                 .frame(maxWidth: 120)
                             Text(progress.text)
-                                .font(.system(size: 11))
+                                .font(.caption2)
                                 .foregroundColor(.secondary)
                         }
                     }

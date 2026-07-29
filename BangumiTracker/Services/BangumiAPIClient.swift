@@ -1,68 +1,65 @@
 import Foundation
 import CryptoKit
+import OSLog
 
 // MARK: - API Error
 
 enum BangumiAPIError: Error, LocalizedError {
     case notImplemented
     case unauthorized
+    case networkTimeout
+    case networkUnavailable
+    case serverUnreachable
     case networkError(Error)
     case decodingError(Error)
     case httpError(Int)
+    case rateLimited
     case invalidURL
 
-    var errorDescription: String? {
+    /// Structured error categories matching the PRD §5.3.5 taxonomy.
+    var userFacingMessage: String {
         switch self {
-        case .notImplemented: "API method not yet implemented"
-        case .unauthorized: "Not authenticated. Please log in to Bangumi."
-        case .networkError(let error): "Network error: \(error.localizedDescription)"
-        case .decodingError(let error): "Data parsing error: \(error.localizedDescription)"
-        case .httpError(let code): "Server error (HTTP \(code))"
-        case .invalidURL: "Invalid URL"
+        case .notImplemented:       return "功能尚未实现"
+        case .unauthorized:         return "登录已过期，请重新登录"
+        case .networkTimeout:       return "请求超时，请检查网络后重试"
+        case .networkUnavailable:   return "网络连接不可用，请检查网络设置"
+        case .serverUnreachable:    return "无法连接到服务器，请稍后重试"
+        case .networkError:         return "网络请求失败，请稍后重试"
+        case .decodingError:        return "数据解析异常，请稍后重试"
+        case .httpError(let code):
+            if (500...599).contains(code) { return "服务器暂时不可用，请稍后重试" }
+            return "请求失败 (HTTP \(code))，请稍后重试"
+        case .rateLimited:          return "请求过于频繁，请稍后再试"
+        case .invalidURL:           return "请求地址无效"
         }
     }
-}
 
-extension BangumiAPIError {
+    var errorDescription: String? { userFacingMessage }
+
+    /// Maps a raw Error (typically URLError) to the structured BangumiAPIError taxonomy.
+    /// Used by `performRequestWithFallback` so ViewModels consistently receive zh-CN messages.
+    static func from(_ error: Error) -> BangumiAPIError {
+        if let apiError = error as? BangumiAPIError { return apiError }
+        if let urlError = error as? URLError {
+            switch urlError.code {
+            case .timedOut:                           return .networkTimeout
+            case .notConnectedToInternet,
+                 .networkConnectionLost:              return .networkUnavailable
+            case .cannotFindHost,
+                 .cannotConnectToHost,
+                 .dnsLookupFailed:                    return .serverUnreachable
+            default:                                  return .networkError(error)
+            }
+        }
+        return .networkError(error)
+    }
+
     var isRetryable: Bool {
         switch self {
-        case .networkError:              true
-        case .httpError(let code):       (500...599).contains(code)
-        case .unauthorized:              false
-        case .decodingError:             false
-        case .invalidURL:                false
-        case .notImplemented:            false
+        case .networkTimeout, .networkUnavailable, .serverUnreachable, .networkError: true
+        case .httpError(let code): (500...599).contains(code)
+        case .rateLimited, .unauthorized, .decodingError, .invalidURL, .notImplemented: false
         }
-    }
-}
-
-// MARK: - Calendar Day
-
-nonisolated struct CalendarDay: Codable, Sendable {
-    let weekday: WeekdayInfo
-    let items: [SlimSubject]
-}
-
-nonisolated struct WeekdayInfo: Codable, Sendable {
-    let en: String
-    let cn: String
-    let ja: String
-    let id: Int
-}
-
-// MARK: - User Info
-
-nonisolated struct UserInfo: Codable, Identifiable, Sendable {
-    let id: Int
-    let username: String
-    let nickname: String
-    let avatar: UserAvatar
-    let sign: String?
-
-    nonisolated struct UserAvatar: Codable, Sendable {
-        let large: String?
-        let medium: String?
-        let small: String?
     }
 }
 
@@ -345,10 +342,16 @@ actor BangumiAPIClient {
         let user = username == "-" ? try await resolveUsername() : username
         // Auto-paginate: a single request is capped at 50, so users with more
         // (e.g. 51 wishes) would otherwise lose the tail. Loop until exhausted.
+        // maxPages provides a safety net against runaway requests if the API's
+        // total field is inconsistent.
         let pageSize = 50
         var offset = 0
         var all: [UserSubjectCollection] = []
+        var pageCount = 0
+        let maxPages = 100
         while true {
+            pageCount += 1
+            if pageCount > maxPages { break }
             var query: [URLQueryItem] = [
                 URLQueryItem(name: "limit", value: String(pageSize)),
                 URLQueryItem(name: "offset", value: String(offset)),
@@ -400,10 +403,16 @@ actor BangumiAPIClient {
         // Auto-paginate: long-running titles (One Piece 1100+, Conan 1100+)
         // exceed a single page, and a capped request would silently truncate
         // their per-episode progress. Loop until `total` is covered.
+        // maxPages provides a safety net against runaway requests if the API's
+        // total field is inconsistent.
         let pageSize = 200
         var offset = 0
         var all: [UserEpisodeCollection] = []
+        var pageCount = 0
+        let maxPages = 100
         while true {
+            pageCount += 1
+            if pageCount > maxPages { break }
             let query: [URLQueryItem] = [
                 URLQueryItem(name: "limit", value: String(pageSize)),
                 URLQueryItem(name: "offset", value: String(offset)),
@@ -538,29 +547,34 @@ actor BangumiAPIClient {
         key: String?,
         generation: UInt64
     ) async throws -> Data {
+        // Per-URL retry with exponential backoff: max 3 attempts (1s → 2s → 4s)
+        // for retryable errors. The base-URL fallback chain still applies:
+        // all 3 retries on baseURL[0] → all 3 on baseURL[1] → … → throw.
+        let maxRetries = 3
+        let baseDelay: TimeInterval = 1.0
         var lastError: Error?
         for baseURL in baseURLs {
-            do {
-                let request = try buildRequest(
-                    path: path, method: method, query: query, bodyData: bodyData,
-                    baseURL: baseURL
-                )
-                if let key {
-                    return try await fetchBlocking(key: key, request: request)
-                } else {
-                    return try await execute(request, generation: generation)
+            for attempt in 0..<maxRetries {
+                if attempt > 0 {
+                    try await Task.sleep(for: .seconds(baseDelay * pow(2.0, Double(attempt - 1))))
                 }
-            } catch {
-                if let apiError = error as? BangumiAPIError, apiError.isRetryable {
-                    lastError = error
-                    continue
+                do {
+                    let request = try buildRequest(
+                        path: path, method: method, query: query, bodyData: bodyData,
+                        baseURL: baseURL
+                    )
+                    let result = key != nil
+                        ? try await fetchBlocking(key: key!, request: request)
+                        : try await execute(request, generation: generation)
+                    return result
+                } catch {
+                    let apiError = BangumiAPIError.from(error)
+                    guard apiError.isRetryable else { throw apiError }
+                    lastError = apiError
                 }
-                throw error
             }
         }
-        throw lastError ?? BangumiAPIError.networkError(
-            NSError(domain: NSURLErrorDomain, code: NSURLErrorCannotConnectToHost)
-        )
+        throw lastError ?? BangumiAPIError.serverUnreachable
     }
 
     /// Executes a URLRequest off-actor and maps the HTTP response. Never
@@ -594,6 +608,9 @@ actor BangumiAPIClient {
                     )
                 }
                 throw BangumiAPIError.unauthorized
+            }
+            if httpResponse.statusCode == 429 {
+                throw BangumiAPIError.rateLimited
             }
             throw BangumiAPIError.httpError(httpResponse.statusCode)
         }
@@ -872,25 +889,7 @@ actor BangumiAPIClient {
     }
 }
 
-// MARK: - Search Filter
-
-nonisolated struct SubjectSearchFilter: Codable, Sendable {
-    var type: [Int]?
-    var metaTags: [String]?
-    var airDate: [String]?
-    var rating: [String]?
-    var ratingCount: [String]?
-    var rank: [String]?
-
-    enum CodingKeys: String, CodingKey {
-        case type
-        case metaTags = "meta_tags"
-        case airDate = "air_date"
-        case rating
-        case ratingCount = "rating_count"
-        case rank
-    }
-}
+// MARK: - Search Body Types
 
 private nonisolated struct SearchKeywordBody: Encodable, Sendable {
     let keyword: String

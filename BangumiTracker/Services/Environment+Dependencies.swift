@@ -1,7 +1,13 @@
 import SwiftUI
+import OSLog
 
 private struct BangumiAPIClientKey: EnvironmentKey {
-    static let defaultValue: BangumiAPIClient = BangumiAPIClient()
+    static let defaultValue: BangumiAPIClient = {
+        Logger(subsystem: "z.zy.BangumiTracker", category: "di").warning(
+            "BangumiAPIClient accessed without environment injection — returning orphan instance"
+        )
+        return BangumiAPIClient()
+    }()
 }
 
 extension EnvironmentValues {
@@ -15,10 +21,19 @@ private struct TabSelectionKey: EnvironmentKey {
     static let defaultValue = Binding<Int>.constant(0)
 }
 
+private struct SessionCoordinatorKey: EnvironmentKey {
+    static let defaultValue: SessionCoordinator? = nil
+}
+
 extension EnvironmentValues {
     var tabSelection: Binding<Int> {
         get { self[TabSelectionKey.self] }
         set { self[TabSelectionKey.self] = newValue }
+    }
+
+    var sessionCoordinator: SessionCoordinator? {
+        get { self[SessionCoordinatorKey.self] }
+        set { self[SessionCoordinatorKey.self] = newValue }
     }
 }
 

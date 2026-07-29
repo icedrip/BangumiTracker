@@ -21,6 +21,17 @@ final class HomeViewModel {
     var hiddenGems: [Subject] = []
     var timeCapsule: TimeCapsuleResult?
     var wantToWatchList: [UserSubjectCollection] = []
+
+    /// URLs of all visible subject images, for Kingfisher prefetching.
+    var visibleImageURLs: [String] {
+        var urls: [String] = []
+        if let pick = todayPick, let url = pick.imageURL { urls.append(url) }
+        if let byw = becauseYouWatch { urls.append(contentsOf: byw.subjects.compactMap(\.imageURL)) }
+        urls.append(contentsOf: hiddenGems.compactMap(\.imageURL))
+        if let tc = timeCapsule { urls.append(contentsOf: tc.subjects.compactMap(\.imageURL)) }
+        urls.append(contentsOf: wantToWatchList.compactMap { $0.subject?.imageURL })
+        return urls
+    }
     var sortOrder: WantToWatchSort = .collectedAt {
         didSet {
             UserDefaults.standard.set(sortOrder.rawValue, forKey: Self.sortOrderKey)
@@ -37,9 +48,14 @@ final class HomeViewModel {
     private var wishCollectedAtMap: [Int: Date] = [:]
     var isLoading = false
     var errorMessage: String?
+    var actionError: String?
+
+    /// Tracks the in-flight overlay-fetch task so View.onDisappear can cancel it.
+    private var overlayFetchTask: Task<Void, Never>?
 
     private let api: BangumiAPIClient
     private let cache: LocalCacheService
+    private let fileCache = FileCache(subdirectory: "dev.bangumi.home")
 
     private static let todayPickCacheKey = "cache.home.todayPick"
     private static let becauseYouWatchCacheKey = "cache.home.becauseYouWatch"
@@ -74,20 +90,16 @@ final class HomeViewModel {
                 self.sortOrder = migrated
             }
         }
-        if let data = UserDefaults.standard.data(forKey: Self.todayPickCacheKey),
-           let cached = try? JSONDecoder().decode(Subject.self, from: data) {
+        if let cached = fileCache.read(Subject.self, forKey: CacheKeys.Home.todayPick) {
             self.todayPick = cached
         }
-        if let data = UserDefaults.standard.data(forKey: Self.becauseYouWatchCacheKey),
-           let cached = try? JSONDecoder().decode(BecauseYouWatchResult.self, from: data) {
+        if let cached = fileCache.read(BecauseYouWatchResult.self, forKey: CacheKeys.Home.becauseYouWatch) {
             self.becauseYouWatch = cached
         }
-        if let data = UserDefaults.standard.data(forKey: Self.hiddenGemsCacheKey),
-           let cached = try? JSONDecoder().decode([Subject].self, from: data) {
+        if let cached = fileCache.read([Subject].self, forKey: CacheKeys.Home.hiddenGems) {
             self.hiddenGems = cached
         }
-        if let data = UserDefaults.standard.data(forKey: Self.timeCapsuleCacheKey),
-           let cached = try? JSONDecoder().decode(TimeCapsuleResult.self, from: data) {
+        if let cached = fileCache.read(TimeCapsuleResult.self, forKey: CacheKeys.Home.timeCapsule) {
             self.timeCapsule = cached
         }
     }
@@ -136,11 +148,20 @@ final class HomeViewModel {
     }
 
     /// Populates the SwiftData cache with the user's collections across all states
-    /// so carousel cards can render the correct status badge.
+    /// so carousel cards can render the correct status badge.  Skips the fetch if
+    /// the cache was loaded within the last 5 minutes to avoid a full-collection
+    /// fetch (~500+ items) on every tab switch.
     private func loadAllCollectionsForOverlay() async {
         guard await api.hasToken() else { return }
+        let cachedCount = cache.cachedCollectionCount()
+        if cachedCount > 0 {
+            // Check if we have recent-enough data — 5 min staleness window.
+            if cache.lastCollectionCacheAt?.timeIntervalSinceNow ?? 0 > -300 {
+                return
+            }
+        }
         if let collections = try? await api.fetchUserCollections() {
-            cache.cacheCollections(collections)
+            try? cache.cacheCollections(collections)
         }
     }
 
@@ -156,9 +177,7 @@ final class HomeViewModel {
             let seed = Self.dailySeed()
             let pick = pool[seed % pool.count]
             todayPick = pick
-            if let data = try? JSONEncoder().encode(pick) {
-                UserDefaults.standard.set(data, forKey: Self.todayPickCacheKey)
-            }
+            fileCache.write(pick, forKey: CacheKeys.Home.todayPick)
         } catch {
             errorMessage = error.localizedDescription
         }
@@ -206,9 +225,7 @@ final class HomeViewModel {
                 subjects: Array(trimmed)
             )
             becauseYouWatch = result
-            if let data = try? JSONEncoder().encode(result) {
-                UserDefaults.standard.set(data, forKey: Self.becauseYouWatchCacheKey)
-            }
+            fileCache.write(result, forKey: CacheKeys.Home.becauseYouWatch)
         } catch {
             errorMessage = error.localizedDescription
         }
@@ -224,9 +241,7 @@ final class HomeViewModel {
             let pool = try await api.searchSubjects(keyword: "", filter: filter, sort: "rank")
             let trimmed = Array(pool.shuffled().prefix(8))
             hiddenGems = trimmed
-            if let data = try? JSONEncoder().encode(trimmed) {
-                UserDefaults.standard.set(data, forKey: Self.hiddenGemsCacheKey)
-            }
+            fileCache.write(trimmed, forKey: CacheKeys.Home.hiddenGems)
         } catch {
             errorMessage = error.localizedDescription
         }
@@ -247,9 +262,7 @@ final class HomeViewModel {
             let trimmed = Array(pool.shuffled().prefix(8))
             let result = TimeCapsuleResult(year: year, subjects: trimmed)
             timeCapsule = result
-            if let data = try? JSONEncoder().encode(result) {
-                UserDefaults.standard.set(data, forKey: Self.timeCapsuleCacheKey)
-            }
+            fileCache.write(result, forKey: CacheKeys.Home.timeCapsule)
         } catch {
             errorMessage = error.localizedDescription
         }
@@ -264,7 +277,7 @@ final class HomeViewModel {
         do {
             let collections = try await api.fetchUserCollections(type: collectionStatus.rawValue)
             wantToWatchList = collections
-            cache.cacheCollections(collections)
+            try cache.cacheCollections(collections)
             // Local "added to wish" timestamps only exist for 想看 items; for other
             // statuses the sort falls back to API `updated_at` (empty map → fallback).
             if collectionStatus == .wish, let userId = try? await api.resolveUserId() {
@@ -360,16 +373,14 @@ final class HomeViewModel {
 
     func addToWishlist(_ subject: Subject) async {
         do {
-            var payload = UserSubjectCollectionModifyPayload()
-            payload.type = CollectionType.wish.rawValue
-            try await api.updateCollection(subjectId: subject.id, payload: payload)
-            // Stamp before refetch so the new item sorts to the top under "收藏时间".
+            let service = CollectionService(api: api, cache: cache)
+            try await service.addToWishlist(subjectId: subject.id)
             if let userId = try? await api.resolveUserId() {
-                cache.recordWishCollectedAt(userId: userId, subjectId: subject.id)
+                service.recordWishCollectedAt(userId: userId, subjectId: subject.id)
             }
             await loadWantToWatch()
         } catch {
-            errorMessage = error.localizedDescription
+            actionError = error.localizedDescription
         }
     }
 

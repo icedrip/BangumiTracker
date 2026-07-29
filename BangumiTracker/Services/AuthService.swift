@@ -1,6 +1,7 @@
 import Foundation
 import Security
 import AuthenticationServices
+import OSLog
 
 enum AuthError: Error, LocalizedError {
     case userCancelled
@@ -232,6 +233,19 @@ final class AuthService {
     /// `refresh_token` grants. The `credential` param is the auth code or the
     /// refresh token, respectively. Throws `TokenEndpointError` so the caller
     /// can distinguish a retryable blip from a dead refresh_token.
+    /// Codable response from the bgm.tv OAuth token endpoint.
+    private struct TokenResponse: Decodable {
+        let accessToken: String
+        let refreshToken: String?
+        let expiresIn: Double?
+
+        enum CodingKeys: String, CodingKey {
+            case accessToken = "access_token"
+            case refreshToken = "refresh_token"
+            case expiresIn = "expires_in"
+        }
+    }
+
     private func exchangeToken(
         grantType: String,
         credential: String,
@@ -282,15 +296,9 @@ final class AuthService {
                 ? TokenEndpointError.permanent
                 : TokenEndpointError.transient
         }
-        guard let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-              let accessToken = json["access_token"] as? String else {
-            throw AuthError.invalidResponse
-        }
-        let refreshToken = json["refresh_token"] as? String
-        // JSONSerialization boxes every JSON number as __NSCFNumber, so `as? Double`
-        // covers both integer (`604400`) and double (`604400.0`) payloads.
-        let expiresAt = (json["expires_in"] as? Double).map { Date(timeIntervalSinceNow: $0) }
-        return AuthToken(accessToken: accessToken, refreshToken: refreshToken, expiresAt: expiresAt)
+        let tokenResponse = try JSONDecoder().decode(TokenResponse.self, from: data)
+        let expiresAt = tokenResponse.expiresIn.map { Date(timeIntervalSinceNow: $0) }
+        return AuthToken(accessToken: tokenResponse.accessToken, refreshToken: tokenResponse.refreshToken, expiresAt: expiresAt)
     }
 
     /// Percent-encodes a string for `application/x-www-form-urlencoded` bodies,

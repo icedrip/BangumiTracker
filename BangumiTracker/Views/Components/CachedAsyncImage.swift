@@ -63,16 +63,19 @@ struct CachedAsyncImage: View {
     }
 
     private var fallbackPlaceholder: some View {
-        // Match SkeletonCard's fill so the failure/no-URL fallback reads as a
-        // continuation of the skeleton rather than a jarring purple block.
         ZStack {
             Color(.systemGray5)
             if !fallbackText.isEmpty {
-                Text(fallbackText)
-                    .font(.system(size: 10, weight: .bold))
-                    .foregroundColor(.secondary)
-                    .multilineTextAlignment(.center)
-                    .padding(4)
+                VStack(spacing: 4) {
+                    Image(systemName: "photo.badge.exclamationmark")
+                        .font(.caption)
+                        .foregroundColor(.secondary.opacity(0.6))
+                    Text(fallbackText)
+                        .font(.caption2.weight(.bold))
+                        .foregroundColor(.secondary)
+                        .multilineTextAlignment(.center)
+                        .padding(4)
+                }
             }
         }
     }

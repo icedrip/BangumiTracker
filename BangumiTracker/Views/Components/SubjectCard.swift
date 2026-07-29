@@ -55,6 +55,7 @@ struct SubjectCard: View {
 
             statusButton
                 .padding(8)
+                .accessibilityLabel(subject.nsfw ? "\(subject.displayName)，18+内容" : subject.displayName)
         }
         .frame(width: Self.cardWidth, height: Self.cardHeight)
     }
@@ -99,7 +100,7 @@ struct SubjectCard: View {
     private var bottomOverlay: some View {
         VStack(alignment: .leading, spacing: 2) {
             Text(subject.displayName)
-                .font(.system(size: 13, weight: .semibold))
+                .font(.subheadline.weight(.semibold))
                 .foregroundColor(.white)
                 .lineLimit(2)
                 .multilineTextAlignment(.leading)
@@ -108,9 +109,9 @@ struct SubjectCard: View {
             if let rating = subject.rating, rating.score > 0 {
                 HStack(spacing: 3) {
                     Image(systemName: "star.fill")
-                        .font(.system(size: 10))
+                        .font(.caption2)
                     Text(String(format: "%.1f", rating.score))
-                        .font(.system(size: 11, weight: .semibold))
+                        .font(.caption2.weight(.semibold))
                 }
                 .foregroundColor(.orange)
                 .shadow(color: .black.opacity(0.6), radius: 2, y: 1)
@@ -149,7 +150,7 @@ struct SubjectCard: View {
                         onAdd?()
                     } label: {
                         Text("+ \(CollectionType.wish.displayName(for: subjectDisplayType))")
-                            .font(.system(size: 11, weight: .semibold))
+                            .font(.caption2.weight(.semibold))
                             .foregroundColor(.white)
                             .padding(.horizontal, 8)
                             .padding(.vertical, 5)
@@ -161,7 +162,7 @@ struct SubjectCard: View {
                     // `CollectionType.displayColor` (shared with ProfileView stat
                     // cards). Non-interactive — tap falls through to detail.
                     Text(statusLabel)
-                        .font(.system(size: 11, weight: .semibold))
+                        .font(.caption2.weight(.semibold))
                         .foregroundColor(.white)
                         .padding(.horizontal, 8)
                         .padding(.vertical, 5)

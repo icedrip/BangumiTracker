@@ -13,7 +13,7 @@ struct ExploreView: View {
                     HStack(spacing: 6) {
                         Image(systemName: "magnifyingglass")
                         Text("搜索作品、声优、导演...")
-                            .font(.system(size: 16))
+                            .font(.body)
                         Spacer()
                     }
                     .foregroundColor(.secondary)
@@ -22,12 +22,12 @@ struct ExploreView: View {
                     .clipShape(RoundedRectangle(cornerRadius: 8))
                 }
                 .buttonStyle(.plain)
-                .padding(.horizontal, 16)
+                .padding(.horizontal, .horizontalPadding)
 
                 // 按季度浏览
                 Text("按季度浏览")
-                    .font(.system(size: 20, weight: .bold, design: .default))
-                    .padding(.horizontal, 16)
+                    .font(.title2.weight(.bold))
+                    .padding(.horizontal, .horizontalPadding)
 
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 8) {
@@ -38,13 +38,13 @@ struct ExploreView: View {
                             .buttonStyle(.plain)
                         }
                     }
-                    .padding(.horizontal, 16)
+                    .padding(.horizontal, .horizontalPadding)
                 }
 
                 // 按类型浏览
                 Text("按类型浏览")
-                    .font(.system(size: 20, weight: .bold, design: .default))
-                    .padding(.horizontal, 16)
+                    .font(.title2.weight(.bold))
+                    .padding(.horizontal, .horizontalPadding)
 
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 8) {
@@ -61,7 +61,7 @@ struct ExploreView: View {
                             .buttonStyle(.plain)
                         }
                     }
-                    .padding(.horizontal, 16)
+                    .padding(.horizontal, .horizontalPadding)
                 }
 
                 // Calendar entry
@@ -69,9 +69,9 @@ struct ExploreView: View {
                     HStack {
                         VStack(alignment: .leading, spacing: 2) {
                             Text("开播日历")
-                                .font(.system(size: 16, weight: .semibold))
+                                .font(.body.weight(.semibold))
                             Text("查看本周放送时间表")
-                                .font(.system(size: 13))
+                                .font(.subheadline)
                                 .foregroundColor(.secondary)
                         }
                         Spacer()
@@ -84,7 +84,7 @@ struct ExploreView: View {
                     .shadow(color: .black.opacity(0.08), radius: 2, y: 1)
                 }
                 .buttonStyle(.plain)
-                .padding(.horizontal, 16)
+                .padding(.horizontal, .horizontalPadding)
 
                 if let msg = viewModel.errorMessage, viewModel.rankings.isEmpty && viewModel.popularSubjects.isEmpty {
                     // Total load failure — surface a retry rather than leaving
@@ -100,7 +100,7 @@ struct ExploreView: View {
                         trailingLabel: "全部",
                         trailingRoute: .browse(BrowseConfig(title: "排行榜", type: nil, year: nil, month: nil, sort: "rank"))
                     )
-                    .padding(.horizontal, 16)
+                    .padding(.horizontal, .horizontalPadding)
 
                     carousel(subjects: viewModel.rankings, placeholderCount: 5)
 
@@ -110,12 +110,12 @@ struct ExploreView: View {
                         trailingLabel: "全部",
                         trailingRoute: .browse(BrowseConfig(title: "热门高分", type: nil, year: nil, month: nil, sort: "heat"))
                     )
-                    .padding(.horizontal, 16)
+                    .padding(.horizontal, .horizontalPadding)
 
                     carousel(subjects: viewModel.popularSubjects, placeholderCount: 5)
                 }
             }
-            .padding(.vertical, 8)
+            .padding(.vertical, .tightSpacing)
         }
         .navigationTitle("发现")
         .navigationBarTitleDisplayMode(.inline)
@@ -126,6 +126,8 @@ struct ExploreView: View {
         .task {
             await viewModel.loadAll()
         }
+        .errorToast(Bindable(viewModel).actionError)
+        .prefetchImages(urls: viewModel.visibleImageURLs)
     }
 
     // MARK: - Helpers
@@ -167,7 +169,7 @@ struct ExploreView: View {
                     }
                 }
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, .horizontalPadding)
         }
     }
 }

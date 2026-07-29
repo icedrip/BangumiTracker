@@ -25,22 +25,22 @@ struct ProgressRow: View {
                 VStack(alignment: .leading, spacing: 0) {
                     HStack(spacing: 4) {
                         Text(collection.subject?.displayName ?? "作品 #\(collection.subjectId)")
-                            .font(.system(size: 15, weight: .semibold))
+                            .font(.subheadline.weight(.semibold))
                             .foregroundColor(.primary)
                             .lineLimit(1)
 
                         if let rating = collection.subject?.rating, rating.score > 0 {
                             Image(systemName: "star.fill")
-                                .font(.system(size: 9))
+                                .font(.caption2)
                                 .foregroundColor(.orange)
                             Text(String(format: "%.1f", rating.score))
-                                .font(.system(size: 12, weight: .semibold))
+                                .font(.caption.weight(.semibold))
                                 .foregroundColor(.orange)
                         }
                     }
 
                     Text(subtitleText)
-                        .font(.system(size: 12))
+                        .font(.caption)
                         .foregroundColor(.secondary)
                         .padding(.top, 2)
 
@@ -49,7 +49,7 @@ struct ProgressRow: View {
                         .padding(.top, 8)
 
                     Text(progressText)
-                        .font(.system(size: 11))
+                        .font(.caption2)
                         .foregroundColor(.secondary)
                         .padding(.top, 2)
                 }
@@ -60,13 +60,15 @@ struct ProgressRow: View {
                     onPlusOne?()
                 } label: {
                     Image(systemName: "plus")
-                        .font(.system(size: 22, weight: .medium))
+                        .font(.title2.weight(.medium))
                         .foregroundColor(.white)
                         .frame(width: 40, height: 40)
                         .background(isComplete ? Color.green : Color.blue)
                         .clipShape(Circle())
                 }
                 .buttonStyle(.plain)
+                .accessibilityLabel(isComplete ? "已看完" : "进度+1")
+                .accessibilityAddTraits(.isButton)
                 .disabled(isComplete)
             }
             .padding(12)

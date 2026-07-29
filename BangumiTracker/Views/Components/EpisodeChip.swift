@@ -11,11 +11,11 @@ struct EpisodeChip: View {
         } label: {
             HStack {
                 Text("第\(episodeNumber)集")
-                    .font(.system(size: 14, weight: .medium))
+                    .font(.callout.weight(.medium))
                 Spacer()
                 if isWatched {
                     Image(systemName: "checkmark")
-                        .font(.system(size: 12, weight: .bold))
+                        .font(.caption.weight(.bold))
                 }
             }
             .padding(.horizontal, 12)
@@ -29,5 +29,7 @@ struct EpisodeChip: View {
             )
         }
         .buttonStyle(.plain)
+        .accessibilityLabel(isWatched ? "第\(episodeNumber)集，已观看" : "第\(episodeNumber)集，未观看")
+        .accessibilityAddTraits(.isButton)
     }
 }

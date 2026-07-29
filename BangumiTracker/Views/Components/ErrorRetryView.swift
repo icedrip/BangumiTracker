@@ -13,7 +13,7 @@ struct ErrorRetryView: View {
                 .font(.system(size: 40))
                 .foregroundColor(.secondary.opacity(0.4))
             Text(message)
-                .font(.system(size: 14))
+                .font(.callout)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
             if let onRetry {
@@ -21,10 +21,10 @@ struct ErrorRetryView: View {
                     onRetry()
                 } label: {
                     Text("重试")
-                        .font(.system(size: 15, weight: .semibold))
+                        .font(.subheadline.weight(.semibold))
                         .foregroundColor(.white)
                         .padding(.horizontal, 24)
-                        .padding(.vertical, 8)
+                        .padding(.vertical, .tightSpacing)
                         .background(Color.blue)
                         .clipShape(RoundedRectangle(cornerRadius: 10))
                 }

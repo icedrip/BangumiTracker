@@ -14,15 +14,15 @@ struct WatchingView: View {
                 if auth.isAuthenticated {
                     // 今日更新
                     Text("今日更新")
-                        .font(.system(size: 20, weight: .bold, design: .default))
-                        .padding(.horizontal, 16)
+                        .font(.title2.weight(.bold))
+                        .padding(.horizontal, .horizontalPadding)
 
                     todaySection
 
                     // 全部在看
                     HStack {
                         Text("全部在看")
-                            .font(.system(size: 20, weight: .bold))
+                            .font(.title2.weight(.bold))
                         Spacer()
                         Picker("", selection: $defaultView) {
                             ForEach(DefaultListView.allCases, id: \.rawValue) { v in
@@ -32,7 +32,7 @@ struct WatchingView: View {
                         .pickerStyle(.segmented)
                         .frame(width: 120)
                     }
-                    .padding(.horizontal, 16)
+                    .padding(.horizontal, .horizontalPadding)
 
                     watchingSection
                 } else {
@@ -41,10 +41,10 @@ struct WatchingView: View {
                         title: "登录后查看你在看的作品",
                         description: "登录 Bangumi 账号，同步你的观看进度与今日更新"
                     )
-                    .padding(.horizontal, 16)
+                    .padding(.horizontal, .horizontalPadding)
                 }
             }
-            .padding(.vertical, 8)
+            .padding(.vertical, .tightSpacing)
         }
         .navigationTitle("在看")
         .navigationBarTitleDisplayMode(.inline)
@@ -57,6 +57,8 @@ struct WatchingView: View {
         .task(id: auth.isAuthenticated) {
             await viewModel.loadAll()
         }
+        .errorToast(Bindable(viewModel).actionError)
+        .prefetchImages(urls: viewModel.visibleImageURLs)
     }
 
     @ViewBuilder
@@ -66,11 +68,11 @@ struct WatchingView: View {
                 HStack(spacing: 12) {
                     ForEach(0..<4, id: \.self) { _ in SkeletonCard() }
                 }
-                .padding(.horizontal, 16)
+                .padding(.horizontal, .horizontalPadding)
             }
         } else if viewModel.todayUpdates.isEmpty {
             Text("今日暂无更新")
-                .font(.system(size: 14))
+                .font(.callout)
                 .foregroundColor(.secondary)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 24)
@@ -83,7 +85,7 @@ struct WatchingView: View {
                         }
                     }
                 }
-                .padding(.horizontal, 16)
+                .padding(.horizontal, .horizontalPadding)
             }
         }
     }
@@ -100,7 +102,7 @@ struct WatchingView: View {
             LazyVStack(spacing: 8) {
                 ForEach(0..<3, id: \.self) { _ in WatchingSkeletonRow() }
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, .horizontalPadding)
         } else if viewModel.watchingList.isEmpty {
             EmptyStateView(
                 icon: "play.square.stack",
@@ -134,7 +136,7 @@ struct WatchingView: View {
                             .contextMenu { collectionContextMenu(collection) }
                     }
                 }
-                .padding(.horizontal, 16)
+                .padding(.horizontal, .horizontalPadding)
             } else {
                 LazyVStack(spacing: 8) {
                     ForEach(viewModel.watchingList) { collection in
@@ -150,7 +152,7 @@ struct WatchingView: View {
                         .contextMenu { collectionContextMenu(collection) }
                     }
                 }
-                .padding(.horizontal, 16)
+                .padding(.horizontal, .horizontalPadding)
             }
         }
     }
@@ -260,7 +262,7 @@ private struct WatchingGridCard: View {
                         Image(systemName: "star.fill")
                             .font(.system(size: 8))
                         Text(String(format: "%.1f", rating.score))
-                            .font(.system(size: 10, weight: .semibold))
+                            .font(.caption2.weight(.semibold))
                     }
                     .foregroundColor(.white)
                     .padding(.horizontal, 5)
@@ -275,7 +277,7 @@ private struct WatchingGridCard: View {
     private var footer: some View {
         VStack(alignment: .leading, spacing: 4) {
             Text(collection.subject?.displayName ?? "作品 #\(collection.subjectId)")
-                .font(.system(size: 13, weight: .semibold))
+                .font(.subheadline.weight(.semibold))
                 .foregroundColor(.primary)
                 .lineLimit(1)
 
@@ -283,7 +285,7 @@ private struct WatchingGridCard: View {
                 ProgressView(value: progress)
                     .tint(isComplete ? .green : .blue)
                 Text(totalCount > 0 ? "\(watchedCount)/\(totalCount)" : "—")
-                    .font(.system(size: 10, weight: .semibold, design: .rounded))
+                    .font(.caption2.weight(.semibold))
                     .foregroundColor(.secondary)
                     .fixedSize()
             }

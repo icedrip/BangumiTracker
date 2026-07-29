@@ -27,7 +27,7 @@ struct HomeView: View {
 
                 // 想看清单 (or a status-filtered view set from a Profile stat-card tap)
                 wantToWatchHeader
-                    .padding(.horizontal, 16)
+                    .padding(.horizontal, .horizontalPadding)
 
                 if viewModel.wantToWatchList.isEmpty {
                     if auth.isAuthenticated {
@@ -71,10 +71,10 @@ struct HomeView: View {
                             )
                         }
                     }
-                    .padding(.horizontal, 16)
+                    .padding(.horizontal, .horizontalPadding)
                 }
             }
-            .padding(.vertical, 8)
+            .padding(.vertical, .tightSpacing)
         }
         .navigationTitle("首页")
         .navigationBarTitleDisplayMode(.inline)
@@ -92,6 +92,8 @@ struct HomeView: View {
         .task(id: auth.isAuthenticated) {
             await viewModel.loadOnAppear()
         }
+        .errorToast(Bindable(viewModel).actionError)
+        .prefetchImages(urls: viewModel.visibleImageURLs)
     }
 
     // MARK: - 想看清单 header
@@ -103,7 +105,7 @@ struct HomeView: View {
         @Bindable var vm = viewModel
         return HStack(alignment: .firstTextBaseline, spacing: 8) {
             Text(wishListTitle)
-                .font(.system(size: 20, weight: .bold))
+                .font(.title2.weight(.bold))
             Spacer(minLength: 8)
             if viewModel.collectionStatus != .wish {
                 Button {
@@ -111,9 +113,9 @@ struct HomeView: View {
                 } label: {
                     HStack(spacing: 4) {
                         Image(systemName: "chevron.left")
-                            .font(.system(size: 11, weight: .semibold))
+                            .font(.caption2.weight(.semibold))
                         Text("想看清单")
-                            .font(.system(size: 15))
+                            .font(.subheadline)
                     }
                     .foregroundColor(.blue)
                 }
@@ -128,9 +130,9 @@ struct HomeView: View {
             } label: {
                 HStack(spacing: 4) {
                     Text("排序: \(viewModel.sortOrder.displayName)")
-                        .font(.system(size: 15))
+                        .font(.subheadline)
                     Image(systemName: "chevron.up.chevron.down")
-                        .font(.system(size: 11, weight: .semibold))
+                        .font(.caption2.weight(.semibold))
                 }
                 .foregroundColor(.blue)
             }
@@ -184,7 +186,7 @@ struct HomeView: View {
             ) {
                 Task { await viewModel.loadBecauseYouWatch() }
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, .horizontalPadding)
 
             carousel(
                 subjects: viewModel.becauseYouWatch?.subjects ?? [],
@@ -200,7 +202,7 @@ struct HomeView: View {
             SectionHeader(title: "宝藏佳作", subtitle: "7.5 分以上", trailingLabel: "换一批") {
                 Task { await viewModel.loadHiddenGems() }
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, .horizontalPadding)
 
             carousel(subjects: viewModel.hiddenGems, placeholderCount: 6)
         }
@@ -217,7 +219,7 @@ struct HomeView: View {
             ) {
                 Task { await viewModel.loadTimeCapsule() }
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, .horizontalPadding)
 
             carousel(subjects: viewModel.timeCapsule?.subjects ?? [], placeholderCount: 6)
         }
@@ -243,7 +245,7 @@ struct HomeView: View {
                     }
                 }
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, .horizontalPadding)
         }
     }
 }

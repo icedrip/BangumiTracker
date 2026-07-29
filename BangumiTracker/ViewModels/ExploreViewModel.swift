@@ -8,6 +8,7 @@ final class ExploreViewModel {
     var popularSubjects: [Subject] = []
     var isLoading = false
     var errorMessage: String?
+    var actionError: String?
     /// Subject ID → collection status, seeded from the SwiftData cache and kept
     /// in sync on adds. Lets carousel/grid cards do an in-memory lookup instead
     /// of a per-card SwiftData fetch (the BrowseView grid can surface dozens of
@@ -15,6 +16,11 @@ final class ExploreViewModel {
     var collectionOverlay: [Int: CollectionType] = [:]
 
     let seasonOptions: [String]
+
+    /// URLs of cover images currently visible, for prefetching.
+    var visibleImageURLs: [String] {
+        (rankings + popularSubjects).compactMap(\.imageURL)
+    }
 
     private let api: BangumiAPIClient
     private let cache: LocalCacheService
@@ -76,7 +82,7 @@ final class ExploreViewModel {
             var filter = SubjectSearchFilter()
             filter.rank = [">0"]
             // All types — type filtering now happens in the pushed BrowseView.
-            rankings = try await api.searchSubjects(keyword: "", filter: filter, sort: "rank")
+            rankings = try await api.searchSubjects(keyword: "", filter: filter, sort: "rank").withoutNSFW
         } catch {
             errorMessage = error.localizedDescription
         }
@@ -88,7 +94,7 @@ final class ExploreViewModel {
             filter.rating = [">=7.0"]
             // "热门" = trending; the >=7.0 filter ensures 高分. (PRD mockup
             // annotates "按评分排序", but heat better matches "热门".)
-            popularSubjects = try await api.searchSubjects(keyword: "", filter: filter, sort: "heat")
+            popularSubjects = try await api.searchSubjects(keyword: "", filter: filter, sort: "heat").withoutNSFW
         } catch {
             errorMessage = error.localizedDescription
         }
@@ -103,7 +109,7 @@ final class ExploreViewModel {
             return
         }
         if let collections = try? await api.fetchUserCollections() {
-            cache.cacheCollections(collections)
+            try? cache.cacheCollections(collections)
         }
         collectionOverlay = Self.buildCollectionOverlay(from: cache)
     }
@@ -114,16 +120,14 @@ final class ExploreViewModel {
 
     func addToWishlist(_ subject: Subject) async {
         do {
-            var payload = UserSubjectCollectionModifyPayload()
-            payload.type = CollectionType.wish.rawValue
-            try await api.updateCollection(subjectId: subject.id, payload: payload)
-            // Persist to the cache (create-if-missing) AND the in-memory overlay
-            // so a subsequently-pushed BrowseView / carousel card immediately
-            // reflects the new status instead of reverting to "+想看".
+            // Shared CollectionService centralizes the API + cache dance.
+            try await CollectionService(api: api, cache: cache).addToWishlist(subjectId: subject.id)
+            // In-memory overlay so a subsequently-pushed BrowseView / carousel
+            // card immediately reflects the new status.
             cache.upsertCachedCollectionType(subjectId: subject.id, type: .wish, subjectType: subject.type)
             collectionOverlay[subject.id] = .wish
         } catch {
-            errorMessage = error.localizedDescription
+            actionError = error.localizedDescription
         }
     }
 

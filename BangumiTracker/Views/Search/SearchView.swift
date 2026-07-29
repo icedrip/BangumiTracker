@@ -53,7 +53,7 @@ struct SearchView: View {
                     .foregroundColor(.secondary)
                 TextField("搜索作品、声优、导演...", text: $searchText)
                     .focused($isSearchFocused)
-                    .font(.system(size: 16))
+                    .font(.body)
                     .submitLabel(.search)
                     .onSubmit(performSearch)
                     .onChange(of: searchText) { _, newValue in
@@ -72,11 +72,11 @@ struct SearchView: View {
             .clipShape(RoundedRectangle(cornerRadius: 8))
 
             Button("取消", action: cancelSearch)
-                .font(.system(size: 16))
+                .font(.body)
                 .foregroundColor(.blue)
         }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 8)
+        .padding(.horizontal, .horizontalPadding)
+        .padding(.vertical, .tightSpacing)
         .background(Color(.systemBackground))
     }
 
@@ -87,7 +87,7 @@ struct SearchView: View {
             ForEach(SearchTab.allCases, id: \.rawValue) { tab in
                 Button(action: { selectTab(tab) }) {
                     Text(tab.rawValue)
-                        .font(.system(size: 14, weight: .medium))
+                        .font(.callout.weight(.medium))
                         .foregroundColor(viewModel.selectedSearchTab == tab ? .blue : .secondary)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 12)
@@ -174,21 +174,21 @@ struct SearchView: View {
                 ) {
                     showClearHistoryConfirm = true
                 }
-                .padding(.horizontal, 16)
+                .padding(.horizontal, .horizontalPadding)
                 .padding(.top, 16)
 
                 ForEach(viewModel.searchHistory) { history in
                     HStack {
                         Image(systemName: "clock.arrow.circlepath")
                             .foregroundColor(.secondary)
-                            .font(.system(size: 12))
+                            .font(.caption)
                         Text(history.keyword)
-                            .font(.system(size: 15))
+                            .font(.subheadline)
                             .foregroundColor(.primary)
                         Spacer()
                     }
                     .contentShape(Rectangle())
-                    .padding(.horizontal, 16)
+                    .padding(.horizontal, .horizontalPadding)
                     .padding(.vertical, 10)
                     .onTapGesture { selectHistory(history.keyword) }
                 }
@@ -202,9 +202,9 @@ struct SearchView: View {
         VStack(alignment: .leading, spacing: 0) {
             if !viewModel.searchResults.isEmpty {
                 Text("条目结果")
-                    .font(.system(size: 13))
+                    .font(.subheadline)
                     .foregroundColor(.secondary)
-                    .padding(.horizontal, 16)
+                    .padding(.horizontal, .horizontalPadding)
                     .padding(.top, 12)
                     .padding(.bottom, 8)
 
@@ -226,6 +226,7 @@ struct SearchView: View {
                 addManualID(id)
             }
         }
+        .errorToast(Bindable(viewModel).actionError)
     }
 
     // MARK: - Character Results
@@ -234,9 +235,9 @@ struct SearchView: View {
         VStack(alignment: .leading, spacing: 0) {
             if !viewModel.characterResults.isEmpty {
                 Text("角色结果")
-                    .font(.system(size: 13))
+                    .font(.subheadline)
                     .foregroundColor(.secondary)
-                    .padding(.horizontal, 16)
+                    .padding(.horizontal, .horizontalPadding)
                     .padding(.top, 12)
                     .padding(.bottom, 8)
 
@@ -255,9 +256,9 @@ struct SearchView: View {
         VStack(alignment: .leading, spacing: 0) {
             if !viewModel.personResults.isEmpty {
                 Text("人物结果")
-                    .font(.system(size: 13))
+                    .font(.subheadline)
                     .foregroundColor(.secondary)
-                    .padding(.horizontal, 16)
+                    .padding(.horizontal, .horizontalPadding)
                     .padding(.top, 12)
                     .padding(.bottom, 8)
 
@@ -272,7 +273,7 @@ struct SearchView: View {
 
     private var noResultsView: some View {
         Text("无相关结果")
-            .font(.system(size: 14))
+            .font(.callout)
             .foregroundColor(.secondary)
             .frame(maxWidth: .infinity)
             .padding(.vertical, 24)

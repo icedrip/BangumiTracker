@@ -67,16 +67,16 @@ final class ProfileViewModel {
         }
     }
 
-    /// Reads + decodes a JSON blob from UserDefaults, or nil if absent / corrupt.
+    private let fileCache = FileCache(subdirectory: "dev.bangumi.profile")
+
+    /// Reads + decodes a JSON blob from the file cache, or nil if absent / corrupt.
     private func loadCached<T: Decodable>(_ type: T.Type, forKey key: String) -> T? {
-        guard let data = UserDefaults.standard.data(forKey: key) else { return nil }
-        return try? JSONDecoder().decode(T.self, from: data)
+        fileCache.read(T.self, forKey: key)
     }
 
-    /// Encodes + writes a value to UserDefaults. Cheap no-op on encode failure.
+    /// Encodes + writes a value to the file cache. Cheap no-op on encode failure.
     private func saveCached<T: Encodable>(_ value: T, forKey key: String) {
-        guard let data = try? JSONEncoder().encode(value) else { return }
-        UserDefaults.standard.set(data, forKey: key)
+        fileCache.write(value, forKey: key)
     }
 
     func loadAll() async {
@@ -99,7 +99,7 @@ final class ProfileViewModel {
             saveCached(info, forKey: Self.userInfoCacheKey)
         } catch BangumiAPIError.unauthorized {
             userInfo = nil
-            UserDefaults.standard.removeObject(forKey: Self.userInfoCacheKey)
+            fileCache.remove(forKey: Self.userInfoCacheKey)
         } catch {
             errorMessage = error.localizedDescription
         }
@@ -232,10 +232,7 @@ final class ProfileViewModel {
         stats = []
         genres = []
         insights = ProfileInsights()
-        UserDefaults.standard.removeObject(forKey: Self.userInfoCacheKey)
-        UserDefaults.standard.removeObject(forKey: Self.statsCacheKey)
-        UserDefaults.standard.removeObject(forKey: Self.genresCacheKey)
-        UserDefaults.standard.removeObject(forKey: Self.insightsCacheKey)
+        fileCache.clear()
     }
 }
 

@@ -78,4 +78,5 @@ enum PreferenceKey {
     static let defaultView = "pref.defaultView"
     static let startPage = "pref.startPage"
     static let scoreDisplay = "pref.scoreDisplay"
+    static let nsfwVisible = "pref.nsfwVisible"
 }

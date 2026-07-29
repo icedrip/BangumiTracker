@@ -60,7 +60,7 @@ final class SubjectDetailViewModel {
         do {
             self.subject = try await subjectRequest
             if let s = self.subject {
-                cache.cacheSubjects([s])
+                try cache.cacheSubjects([s])
             }
         } catch {
             errorMessage = error.localizedDescription
