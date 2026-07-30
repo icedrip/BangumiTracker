@@ -23,9 +23,3 @@ extension Sequence where Element == Subject {
     }
 }
 
-extension Array where Element == Subject {
-    var withoutNSFW: [Subject] {
-        guard !UserDefaults.standard.bool(forKey: "pref.nsfwVisible") else { return self }
-        return filter { !$0.nsfw }
-    }
-}

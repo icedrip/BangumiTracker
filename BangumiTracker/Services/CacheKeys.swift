@@ -12,12 +12,4 @@ enum CacheKeys {
         static let recommendationsLastLoadedDay = "cache.home.recommendationsLastLoadedDay"
         static let wishSort = "home.wishSort"
     }
-
-    // MARK: - Profile
-    enum Profile {
-        static let userInfo = "cache.profile.userInfo"
-        static let stats = "cache.profile.stats"
-        static let genres = "cache.profile.genres"
-        static let insights = "cache.profile.insights"
-    }
 }
