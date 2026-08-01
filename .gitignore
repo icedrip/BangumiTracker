@@ -34,3 +34,13 @@ fastlane/screenshots
 
 # Local secrets — never commit real tokens
 DevSecrets.swift
+
+# Local-only content — scratch/docs/prototype/website/cloud function,
+# kept on this machine only: never committed, never pushed.
+.claude/
+.qoder/
+.superpowers/
+.xcodebuildmcp/
+docs/
+website/
+function/

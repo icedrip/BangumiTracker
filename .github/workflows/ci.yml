@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    name: Build and Test
+    runs-on: macos-15
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Select Xcode
+        run: sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
+
+      - name: Resolve Package Dependencies
+        run: |
+          xcodebuild -resolvePackageDependencies \
+            -project BangumiTracker.xcodeproj \
+            -scheme BangumiTracker
+
+      - name: Build
+        run: |
+          xcodebuild build \
+            -project BangumiTracker.xcodeproj \
+            -scheme BangumiTracker \
+            -destination 'platform=iOS Simulator,name=iPhone 17 Pro' \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO
+
+      - name: Test
+        run: |
+          xcodebuild test \
+            -project BangumiTracker.xcodeproj \
+            -scheme BangumiTracker \
+            -destination 'platform=iOS Simulator,name=iPhone 17 Pro' \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO \
+            -only-testing:BangumiTrackerTests
+
+      - name: SwiftLint
+        run: |
+          swiftlint --strict
