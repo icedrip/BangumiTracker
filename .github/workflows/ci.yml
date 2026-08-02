@@ -24,6 +24,16 @@ jobs:
             -project BangumiTracker.xcodeproj \
             -scheme BangumiTracker
 
+      - name: Ensure simulator
+        run: |
+          # macOS 26 runner images install runtimes but don't pre-create the
+          # device; create + boot it so the name-based destinations resolve.
+          xcrun simctl create "iPhone 17 Pro" \
+            "com.apple.CoreSimulator.SimDeviceType.iPhone-17-Pro" \
+            "com.apple.CoreSimulator.SimRuntime.iOS-26-5" >/dev/null 2>&1 || true
+          xcrun simctl boot "iPhone 17 Pro" >/dev/null 2>&1 || true
+          xcrun simctl bootstatus "iPhone 17 Pro" -b
+
       - name: Build
         run: |
           xcodebuild build \
