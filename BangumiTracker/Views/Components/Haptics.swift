@@ -4,37 +4,34 @@ import UIKit
 /// with a single call. Precise (fires exactly on user action) unlike
 /// `.sensoryFeedback(trigger:)` which can fire on any value change.
 ///
-/// Generators are held in static constants and `prepare()`d once, per Apple's
-/// guidance to reuse generators rather than allocating per call (allocation
-/// adds latency on the haptic path and the generators are designed to be
-/// long-lived).
+/// Generators are created once and reused, per Apple's guidance to reuse
+/// generators rather than allocating per call (allocation adds latency on the
+/// haptic path and the generators are designed to be long-lived).
+///
+/// The generators' SDK initializers are `@MainActor`-isolated. A static stored
+/// property's default value is evaluated in a nonisolated context (lazy global
+/// init semantics) and fails to compile under Swift 6.0, so creation is deferred
+/// into the MainActor-isolated cache below instead.
 enum Haptics {
-    private static let notification = UINotificationFeedbackGenerator()
-    private static let lightImpact = UIImpactFeedbackGenerator(style: .light)
-    private static let mediumImpact = UIImpactFeedbackGenerator(style: .medium)
-    private static let selectionGenerator = UISelectionFeedbackGenerator()
-
-    static func success() {
-        notification.notificationOccurred(.success)
+    private struct Generators {
+        let notification = UINotificationFeedbackGenerator()
+        let light = UIImpactFeedbackGenerator(style: .light)
+        let medium = UIImpactFeedbackGenerator(style: .medium)
+        let selection = UISelectionFeedbackGenerator()
     }
 
-    static func warning() {
-        notification.notificationOccurred(.warning)
+    private static var cached: Generators?
+    private static func make() -> Generators {
+        if let cached { return cached }
+        let generators = Generators()
+        cached = generators
+        return generators
     }
 
-    static func error() {
-        notification.notificationOccurred(.error)
-    }
-
-    static func light() {
-        lightImpact.impactOccurred()
-    }
-
-    static func medium() {
-        mediumImpact.impactOccurred()
-    }
-
-    static func selection() {
-        selectionGenerator.selectionChanged()
-    }
+    static func success() { make().notification.notificationOccurred(.success) }
+    static func warning() { make().notification.notificationOccurred(.warning) }
+    static func error() { make().notification.notificationOccurred(.error) }
+    static func light() { make().light.impactOccurred() }
+    static func medium() { make().medium.impactOccurred() }
+    static func selection() { make().selection.selectionChanged() }
 }

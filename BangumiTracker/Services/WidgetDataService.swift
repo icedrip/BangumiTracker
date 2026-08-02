@@ -102,7 +102,7 @@ enum WidgetDataService {
     /// 预下载封面图到 App Group 共享目录（widget 侧从该目录读取）
     private static func cacheImages(for items: [WidgetSubjectItem]) async {
         guard let cacheDir = imageCacheDir else { return }
-        var toDownload = items.filter { item in
+        let toDownload = items.filter { item in
             guard let urlString = item.imageURL, URL(string: urlString) != nil else { return false }
             let fileURL = cacheDir.appendingPathComponent("\(item.id).jpg")
             return !FileManager.default.fileExists(atPath: fileURL.path)
