@@ -40,6 +40,12 @@ jobs:
           xcrun simctl bootstatus "$UDID" -b
           echo "SIM_UDID=$UDID" >> "$GITHUB_ENV"
 
+      - name: Prepare DevSecrets
+        # DevSecrets.swift is gitignored (real tokens exist only locally); the
+        # tracked example has empty values that compile and disable OAuth /
+        # feedback gracefully, which is all tests need.
+        run: cp BangumiTracker/DevSecrets.swift.example BangumiTracker/DevSecrets.swift
+
       - name: Build
         run: |
           xcodebuild build \
