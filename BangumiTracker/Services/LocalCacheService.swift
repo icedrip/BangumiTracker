@@ -140,8 +140,7 @@ final class LocalCacheService {
     var lastCollectionCacheAt: Date? {
         get { UserDefaults.standard.object(forKey: Self.lastCollectionCacheKey) as? Date }
         set {
-            if let newValue { UserDefaults.standard.set(newValue, forKey: Self.lastCollectionCacheKey) }
-            else { UserDefaults.standard.removeObject(forKey: Self.lastCollectionCacheKey) }
+            if let newValue { UserDefaults.standard.set(newValue, forKey: Self.lastCollectionCacheKey) } else { UserDefaults.standard.removeObject(forKey: Self.lastCollectionCacheKey) }
         }
     }
     private static let lastCollectionCacheKey = "cache.collection.lastWriteAt"

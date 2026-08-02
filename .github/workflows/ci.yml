@@ -69,4 +69,5 @@ jobs:
 
       - name: SwiftLint
         run: |
+          brew install swiftlint >/dev/null 2>&1
           swiftlint --strict

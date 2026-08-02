@@ -170,7 +170,6 @@ final class AuthService {
             let code = comps.queryItems?.first(where: { $0.name == "code" })?.value
         else { throw AuthError.invalidResponse }
 
-
         let token = try await exchangeToken(
             grantType: "authorization_code",
             credential: code,

@@ -22,4 +22,3 @@ extension Sequence where Element == Subject {
         return filter { !$0.nsfw }
     }
 }
-

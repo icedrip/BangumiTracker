@@ -96,7 +96,6 @@ struct SubjectCard: View {
         optimisticType ?? collectionType
     }
 
-
     private var bottomOverlay: some View {
         VStack(alignment: .leading, spacing: 2) {
             Text(subject.displayName)

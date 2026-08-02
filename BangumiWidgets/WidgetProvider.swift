@@ -10,7 +10,7 @@ struct WidgetEntry: TimelineEntry {
 }
 
 /// TimelineProvider 的通用工具方法
-struct WidgetProvider {
+enum WidgetProvider {
 
     static func readItems(from key: String) -> [WidgetSubjectItem] {
         guard let defaults = UserDefaults(suiteName: AppGroupKeys.appGroupID),
