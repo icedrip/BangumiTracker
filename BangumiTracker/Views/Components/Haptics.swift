@@ -8,22 +8,29 @@ import UIKit
 /// generators rather than allocating per call (allocation adds latency on the
 /// haptic path and the generators are designed to be long-lived).
 ///
-/// The generators' SDK initializers are `@MainActor`-isolated. A static stored
-/// property's default value is evaluated in a nonisolated context (lazy global
-/// init semantics) and fails to compile under Swift 6.0, so creation is deferred
-/// into the MainActor-isolated cache below instead.
+/// The generators' SDK initializers are `@MainActor`-isolated. Under Swift 6.0
+/// a stored property default value that calls an isolated initializer fails
+/// with "main actor-isolated default value in a nonisolated context", so
+/// creation is deferred into the MainActor-isolated `make()` cache instead of
+/// using stored default values.
+@MainActor
 enum Haptics {
     private struct Generators {
-        let notification = UINotificationFeedbackGenerator()
-        let light = UIImpactFeedbackGenerator(style: .light)
-        let medium = UIImpactFeedbackGenerator(style: .medium)
-        let selection = UISelectionFeedbackGenerator()
+        let notification: UINotificationFeedbackGenerator
+        let light: UIImpactFeedbackGenerator
+        let medium: UIImpactFeedbackGenerator
+        let selection: UISelectionFeedbackGenerator
     }
 
     private static var cached: Generators?
     private static func make() -> Generators {
         if let cached { return cached }
-        let generators = Generators()
+        let generators = Generators(
+            notification: UINotificationFeedbackGenerator(),
+            light: UIImpactFeedbackGenerator(style: .light),
+            medium: UIImpactFeedbackGenerator(style: .medium),
+            selection: UISelectionFeedbackGenerator()
+        )
         cached = generators
         return generators
     }
